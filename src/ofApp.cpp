@@ -50,7 +50,8 @@ void ofApp::setup()
     scaleY = ofGetHeight() / 2;
     scale = 2;
     
-//    cam.setFarClip(5);
+    cam.setFarClip(10000);
+    cam.setNearClip(0.1);
     
     // get images from directory
     ofLog() << "Gathering images...";
@@ -122,19 +123,12 @@ void ofApp::update()
 void ofApp::draw()
 {
     cam.begin();
-    
-//    float scaleX = ofGetWidth() / 2;
-//    float scaleY = ofGetHeight() / 2;
-    
+
     ofBackground(0);
     
     ofSetColor(255);
     ofFill();
     ofDrawEllipse(50, 50, 50, 50);
-    
-//    ofPushMatrix();
-//    ofTranslate(scaleX, scaleY, scaleX);
-//    ofScale(scaleY, scaleY, scaleY);
     
     for (int i = 0; i < solvedGrid.size(); i++)
     {
@@ -143,33 +137,10 @@ void ofApp::draw()
         float z = scale * (nz - 1) * 256 * solvedGrid[i].z;
         
         images[i].draw(x, y, z, images[i].getWidth(), images[i].getHeight());
-//        for (int x = 0; x < nx; x++)
-//        {
-//            for (int y = 0; y < ny; y++)
-//            {
-//                for (int z = 0; z < nz; z++)
-//                {
-//                    images[i].draw(x, y, z, scaleX * images[i].getWidth(), scaleY * images[i].getHeight());
-//                }
-//            }
-//        }
+
         std::cout << "x: " << x << " , y: " << y << " , z: " << z << endl;
     }
-    
-//    ofPopMatrix();
-    
-//    for (int x = 0; x < nx; x++)
-//    {
-//        for (int y = 0; y < ny; y++)
-//        {
-//            for (int z = 0; z < nz; z++)
-//            {
-//                ofPushMatrix();
-//                ofTranslate(x, y, z);
-//                )
-//            }
-//        }
-//    }
+
     
     cam.end();
     
