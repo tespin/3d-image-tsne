@@ -41,10 +41,9 @@ class ofApp : public ofBaseApp{
     vector<ofVec3f> initial, grid;
     
     int nx, ny, nz;
-    int w, h;
-    int displayW, displayH;
+    int w, h, d;
     float perplexity, theta;
-    float scaleX, scaleY, scale;
+    float scale;
     
     bool runManually;
 		

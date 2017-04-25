@@ -1,5 +1,8 @@
 #include "ofApp.h"
 
+// how to define clusters?
+// how to check for points inside a shape
+
 const string allowed_ext[] = {"jpg", "png", "gif", "jpeg"};
 
 void ofApp::scan_dir_imgs(ofDirectory dir)
@@ -28,29 +31,34 @@ void ofApp::scan_dir_imgs(ofDirectory dir)
 
 void ofApp::setup()
 {
-    string imageDir = "/YOUR/IMAGE/DIRECTORY/HERE";
+
+    string imageDir = "/Users/tespin/Documents/openFrameworks/apps/myApps/00_BatchFeatureEncoder/bin/data/image-set-a-scanner-darkly-2";
     
-    string imageSavePath = "test-3d-tsne.png";
+    string imageSavePath = "test-3d-tsne-scanner-darkly.png";
     
-    nx = 10;
-    ny = 10;
-    nz = 10;
+    // test
+    nx = 3;
+    ny = 3;
+    nz = 3;
+    
+    // development
+//    nx = 10;
+//    ny = 10;
+//    nz = 10;
     
     w = 256;
     h = 256;
-    
-    displayW = 100;
-    displayH = 100;
+    d = 256;
     
     perplexity = 50;
     theta = 0.4;
     
-    scaleX = ofGetWidth() / 2;
-    scaleY = ofGetHeight() / 2;
+    ofEnableDepthTest();
+    
     scale = 2;
     
-    cam.setFarClip(10000);
     cam.setNearClip(0.1);
+    cam.setFarClip(10000);
     
     // get images from directory
     ofLog() << "Gathering images...";
@@ -111,6 +119,7 @@ void ofApp::setup()
     gridPoints = makeGrid(nx, ny, nz);
     solvedGrid = solver.match(tsnePoints, gridPoints, false);
     
+    // find cluster -> iterate through vertices -> check for verts inside mesh -> save out as obj
     // save points?
     
     
@@ -145,7 +154,7 @@ void ofApp::draw()
     {
         float x = scale * (nx - 1) * w * solvedGrid[i].x;
         float y = scale * (ny - 1) * h * solvedGrid[i].y;
-        float z = scale * (nz - 1) * 256 * solvedGrid[i].z;
+        float z = scale * (nz - 1) * d * solvedGrid[i].z;
         
 //        images[i].draw(gridPoints[i] * t + tsnePoints[i] * (1 - t));
         images[i].draw(x, y, z, images[i].getWidth(), images[i].getHeight());
