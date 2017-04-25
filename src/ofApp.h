@@ -14,20 +14,18 @@ class ofApp : public ofBaseApp{
     
     void scan_dir_imgs(ofDirectory dir);
     
-    struct TestPoint
+    struct Cluster
     {
-        int class_;
-        ofColor color;
-        vector<float> point;
-        ofPoint tsnePoint;
+        // details on cluster ...
+        // expose features?
+        
     };
     
     
     ofxCcv ccv;
     
     ofxTSNE tsne;
-    vector<TestPoint> testPoints;
-    vector<vector<double>> tsnePoints;
+    vector<ofVec3f> tsnePoints;
     
     ofEasyCam cam;
     ofxAssignment solver;
@@ -35,8 +33,10 @@ class ofApp : public ofBaseApp{
     vector<ofFile> imageFiles;
     vector<ofImage> images;
     vector<vector<float>> encodings;
+    vector<vector<ofxCcv::Classification>> results;
+    vector<ofxCcv::Classification> classification;
     vector<vector<double>> tsneVecs;
-    vector<ofVec3f> solvedGrid;
+    vector<ofVec3f> solvedGrid, gridPoints;
     
     vector<ofVec3f> initial, grid;
     
