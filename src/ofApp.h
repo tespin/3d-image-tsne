@@ -4,6 +4,10 @@
 #include "ofxCcv.h"
 #include "ofxTSNE.h"
 #include "ofxAssignment.h"
+#include "ofxLearn.h"
+
+#define NUMIMAGES 1500
+#define NUMCLUSTERS 10
 
 class ofApp : public ofBaseApp{
 
@@ -27,6 +31,11 @@ class ofApp : public ofBaseApp{
     ofxTSNE tsne;
     vector<ofVec3f> tsnePoints;
     
+    ofxLearnKMeans clusterer;
+    vector<double> instances[NUMIMAGES];
+    vector<int> clusters;
+    ofColor colors[NUMCLUSTERS];
+    
     ofEasyCam cam;
     ofxAssignment solver;
     
@@ -39,6 +48,8 @@ class ofApp : public ofBaseApp{
     vector<ofVec3f> solvedGrid, gridPoints;
     
     vector<ofVec3f> initial, grid;
+    
+    ofSpherePrimitive sphere;
     
     int nx, ny, nz;
     int w, h, d;

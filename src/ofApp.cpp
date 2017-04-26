@@ -37,9 +37,9 @@ void ofApp::setup()
     string imageSavePath = "test-3d-tsne-scanner-darkly.png";
     
     // test
-    nx = 3;
-    ny = 3;
-    nz = 3;
+    nx = 15;
+    ny = 10;
+    nz = 10;
     
     // development
 //    nx = 10;
@@ -51,14 +51,14 @@ void ofApp::setup()
     d = 256;
     
     perplexity = 50;
-    theta = 0.4;
+    theta = 0.3;
     
     ofEnableDepthTest();
     
     scale = 2;
     
     cam.setNearClip(0.1);
-    cam.setFarClip(10000);
+    cam.setFarClip(15000);
     
     // get images from directory
     ofLog() << "Gathering images...";
@@ -119,6 +119,31 @@ void ofApp::setup()
     gridPoints = makeGrid(nx, ny, nz);
     solvedGrid = solver.match(tsnePoints, gridPoints, false);
     
+    sphere.setRadius(50);
+    
+    for (int i = 0; i < NUMIMAGES; i++)
+    {
+        instances[i].push_back(tsneVecs[i][0]);
+        instances[i].push_back(tsneVecs[i][1]);
+        instances[i].push_back(tsneVecs[i][2]);
+        clusterer.addSample(instances[i]);
+        
+        
+    }
+    
+    clusterer.setNumClusters(NUMCLUSTERS);
+    clusterer.train();
+    clusters = clusterer.getClusters();
+    
+    
+    for (int i = 0; i < clusters.size(); i++) {
+        cout << "Instance " << ofToString(i) << " " << ofToString(instances[i]) << " assigned to cluster " << ofToString(clusters[i]) << endl;
+    }
+    
+    for (int i = 0; i < NUMCLUSTERS; i++) {
+        colors[i] = ofColor( ofRandom(255), ofRandom(255), ofRandom(255) );
+    }
+    
     // find cluster -> iterate through vertices -> check for verts inside mesh -> save out as obj
     // save points?
     
@@ -156,11 +181,18 @@ void ofApp::draw()
         float y = scale * (ny - 1) * h * solvedGrid[i].y;
         float z = scale * (nz - 1) * d * solvedGrid[i].z;
         
-//        images[i].draw(gridPoints[i] * t + tsnePoints[i] * (1 - t));
+        ofSetColor(255, 255, 255);
         images[i].draw(x, y, z, images[i].getWidth(), images[i].getHeight());
+        
+        ofSetColor(colors[clusters[i]]);
+        sphere.setPosition(x + (images[i].getWidth() / 2) , y + (images[i].getHeight() / 2), z);
+        sphere.draw();
+        
+//        images[i].draw(gridPoints[i] * t + tsnePoints[i] * (1 - t));
+//        images[i].draw(x, y, z, images[i].getWidth(), images[i].getHeight());
 //        ofDrawBitmapStringHighlight(classification[i].imageNetName, x, y, z-5.5);
 
-        std::cout << "x: " << x << " , y: " << y << " , z: " << z << endl;
+//        std::cout << "x: " << x << " , y: " << y << " , z: " << z << endl;
     }
 
     

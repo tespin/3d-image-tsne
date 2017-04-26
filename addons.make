@@ -1,3 +1,4 @@
 ofxAssignment
 ofxCcv
+ofxLearn
 ofxTSNE
