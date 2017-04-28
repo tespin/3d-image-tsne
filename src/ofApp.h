@@ -5,6 +5,10 @@
 #include "ofxTSNE.h"
 #include "ofxAssignment.h"
 #include "ofxLearn.h"
+#include "ofxGui.h"
+
+//#define NUMIMAGES 1500
+//#define NUMCLUSTERS 10
 
 #define NUMIMAGES 1500
 #define NUMCLUSTERS 10
@@ -16,13 +20,15 @@ class ofApp : public ofBaseApp{
 		void update();
 		void draw();
     
+    void setupGui();
+    void drawGui();
+    
     void scan_dir_imgs(ofDirectory dir);
     
     struct Cluster
     {
         // details on cluster ...
         // expose features?
-        
     };
     
     
@@ -48,6 +54,13 @@ class ofApp : public ofBaseApp{
     vector<ofVec3f> solvedGrid, gridPoints;
     
     vector<ofVec3f> initial, grid;
+    
+    ofxPanel guiImages;
+    ofxPanel guiPointClouds;
+    
+    ofParameter<bool> imagesDraw;
+    ofParameter<bool> pointCloudsDraw;
+    ofParameter<float> testFloat;
     
     ofSpherePrimitive sphere;
     

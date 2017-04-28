@@ -53,12 +53,12 @@ void ofApp::setup()
     perplexity = 50;
     theta = 0.3;
     
-    ofEnableDepthTest();
+//    ofEnableDepthTest();
     
     scale = 2;
     
     cam.setNearClip(0.1);
-    cam.setFarClip(15000);
+    cam.setFarClip(50000);
     
     // get images from directory
     ofLog() << "Gathering images...";
@@ -146,19 +146,19 @@ void ofApp::setup()
     
     // find cluster -> iterate through vertices -> check for verts inside mesh -> save out as obj
     // save points?
-    
-    
+    setupGui();
 }
 
 void ofApp::update()
 {
-
+    std::cout << "Text color: " << guiImages.getTextColor() << endl;
 
 }
 
 void ofApp::draw()
 {
     cam.begin();
+    ofEnableDepthTest();
 
     ofBackground(0);
     
@@ -181,12 +181,18 @@ void ofApp::draw()
         float y = scale * (ny - 1) * h * solvedGrid[i].y;
         float z = scale * (nz - 1) * d * solvedGrid[i].z;
         
+        if (imagesDraw)
+        {
         ofSetColor(255, 255, 255);
         images[i].draw(x, y, z, images[i].getWidth(), images[i].getHeight());
+        }
         
+        if (pointCloudsDraw)
+        {
         ofSetColor(colors[clusters[i]]);
         sphere.setPosition(x + (images[i].getWidth() / 2) , y + (images[i].getHeight() / 2), z);
         sphere.draw();
+        }
         
 //        images[i].draw(gridPoints[i] * t + tsnePoints[i] * (1 - t));
 //        images[i].draw(x, y, z, images[i].getWidth(), images[i].getHeight());
@@ -194,8 +200,26 @@ void ofApp::draw()
 
 //        std::cout << "x: " << x << " , y: " << y << " , z: " << z << endl;
     }
-
-    
     cam.end();
+    ofDisableDepthTest();
+    drawGui();
     
+}
+
+void ofApp::setupGui()
+{
+    guiImages.setup();
+    guiImages.setPosition(0, 0);
+    guiImages.add(imagesDraw.set("Draw Images", true));
+//    guiImages.add(testFloat.set("Test float", 5, 0, 10));
+    
+    guiPointClouds.setup();
+    guiPointClouds.setPosition(guiImages.getPosition().x, guiImages.getHeight());
+    guiPointClouds.add(pointCloudsDraw.set("Draw Point Clouds", true));
+}
+
+void ofApp::drawGui()
+{
+    guiImages.draw();
+    guiPointClouds.draw();
 }
