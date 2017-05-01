@@ -37,9 +37,9 @@ void ofApp::setup()
     string imageSavePath = "test-3d-tsne-scanner-darkly.png";
     
     // test
-    nx = 15;
-    ny = 10;
-    nz = 10;
+    nx = 8;
+    ny = 8;
+    nz = 8;
     
     // development
 //    nx = 10;
@@ -104,10 +104,6 @@ void ofApp::setup()
         if (i % 20 == 0) ofLog() << " - encoding image " << i << " / " << images.size();
         vector<float> encoding = ccv.encode(images[i], ccv.numLayers()-1);
         encodings.push_back(encoding);
-        
-//        if (i % 20 == 0) ofLog() << " - classifying image " << i << " / " <<images.size();
-//        classification = ccv.classify(images[i]);
-//        results.push_back(classification);
     }
     
     // run t-SNE and load image points to imagePoints
@@ -137,7 +133,20 @@ void ofApp::setup()
     
     
     for (int i = 0; i < clusters.size(); i++) {
-        cout << "Instance " << ofToString(i) << " " << ofToString(instances[i]) << " assigned to cluster " << ofToString(clusters[i]) << endl;
+        Cluster cluster;
+        
+        cluster.clusterIndex = clusters[i];
+        
+        for (int j = 0; j < images.size(); j++)
+        {
+            cluster.image = images[j];
+        }
+        
+        imageClusters.push_back(cluster);
+        
+        std::cout << "Image: " << i << " Assigned to: " << imageClusters[i].clusterIndex << " Actual cluster: " << clusters[i] << std::endl;
+        
+//        cout << "Instance " << ofToString(i) << " " << ofToString(instances[i]) << " assigned to cluster " << ofToString(clusters[i]) << endl;
     }
     
     for (int i = 0; i < NUMCLUSTERS; i++) {
@@ -151,7 +160,6 @@ void ofApp::setup()
 
 void ofApp::update()
 {
-    std::cout << "Text color: " << guiImages.getTextColor() << endl;
 
 }
 
@@ -161,17 +169,6 @@ void ofApp::draw()
     ofEnableDepthTest();
 
     ofBackground(0);
-    
-//    vector<string> classNames = ccv.getClasses();
-//    for (int i = 0; i < encodings.size(); i++)
-//    {
-//        ofSetColor(255);
-//        int textY = ofMap(i, 0, encodings.size(), 0, ofGetHeight());
-//        ofDrawBitmapString(classNames[i], 19, textY + 12);
-//        ofDrawBitmapString(classification[i].imageNetName, 20, textY + 15);
-//        ofDrawBitMapString(classNames[i], 10, 50);
-//        std::cout << classNames[i] << endl;
-//    }
     
     float t = ofMap(cos(ofGetElapsedTimef()), -1, 1, 0, 1);
     
@@ -184,7 +181,14 @@ void ofApp::draw()
         if (imagesDraw)
         {
         ofSetColor(255, 255, 255);
-        images[i].draw(x, y, z, images[i].getWidth(), images[i].getHeight());
+            
+            if (imageClusters[i].clusterIndex == 1)
+            {
+                imageClusters[i].image.draw(x, y, z, imageClusters[i].image.getWidth(), imageClusters[i].image.getHeight());
+   
+            }
+            
+//        images[i].draw(x, y, z, images[i].getWidth(), images[i].getHeight());
         }
         
         if (pointCloudsDraw)
@@ -193,10 +197,6 @@ void ofApp::draw()
         sphere.setPosition(x + (images[i].getWidth() / 2) , y + (images[i].getHeight() / 2), z);
         sphere.draw();
         }
-        
-//        images[i].draw(gridPoints[i] * t + tsnePoints[i] * (1 - t));
-//        images[i].draw(x, y, z, images[i].getWidth(), images[i].getHeight());
-//        ofDrawBitmapStringHighlight(classification[i].imageNetName, x, y, z-5.5);
 
 //        std::cout << "x: " << x << " , y: " << y << " , z: " << z << endl;
     }
@@ -211,7 +211,6 @@ void ofApp::setupGui()
     guiImages.setup();
     guiImages.setPosition(0, 0);
     guiImages.add(imagesDraw.set("Draw Images", true));
-//    guiImages.add(testFloat.set("Test float", 5, 0, 10));
     
     guiPointClouds.setup();
     guiPointClouds.setPosition(guiImages.getPosition().x, guiImages.getHeight());

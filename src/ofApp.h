@@ -10,8 +10,8 @@
 //#define NUMIMAGES 1500
 //#define NUMCLUSTERS 10
 
-#define NUMIMAGES 1500
-#define NUMCLUSTERS 10
+#define NUMIMAGES 512
+#define NUMCLUSTERS 3
 
 class ofApp : public ofBaseApp{
 
@@ -29,8 +29,12 @@ class ofApp : public ofBaseApp{
     {
         // details on cluster ...
         // expose features?
+        ofImage image;
+        int clusterIndex;
     };
     
+    
+    std::vector<Cluster> imageClusters;
     
     ofxCcv ccv;
     
