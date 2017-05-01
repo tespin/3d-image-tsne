@@ -23,6 +23,8 @@ class ofApp : public ofBaseApp{
     void setupGui();
     void drawGui();
     
+    void initGui();
+    
     void scan_dir_imgs(ofDirectory dir);
     
     struct Cluster
@@ -33,8 +35,16 @@ class ofApp : public ofBaseApp{
         int clusterIndex;
     };
     
-    
     std::vector<Cluster> imageClusters;
+    
+    struct ClusterGui
+    {
+        ofxPanel gui;
+        ofParameter<bool> drawImages;
+        ofParameter<bool> drawPointCloud;
+    };
+    
+    std::vector<ClusterGui> clustersGui;
     
     ofxCcv ccv;
     

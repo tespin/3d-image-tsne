@@ -150,11 +150,13 @@ void ofApp::setup()
     }
     
     for (int i = 0; i < NUMCLUSTERS; i++) {
+        
         colors[i] = ofColor( ofRandom(255), ofRandom(255), ofRandom(255) );
     }
     
     // find cluster -> iterate through vertices -> check for verts inside mesh -> save out as obj
     // save points?
+    initGui();
     setupGui();
 }
 
@@ -182,13 +184,13 @@ void ofApp::draw()
         {
         ofSetColor(255, 255, 255);
             
-            if (imageClusters[i].clusterIndex == 1)
-            {
-                imageClusters[i].image.draw(x, y, z, imageClusters[i].image.getWidth(), imageClusters[i].image.getHeight());
-   
-            }
+//            if (imageClusters[i].clusterIndex == 1)
+//            {
+//                imageClusters[i].image.draw(x, y, z, imageClusters[i].image.getWidth(), imageClusters[i].image.getHeight());
+//   
+//            }
             
-//        images[i].draw(x, y, z, images[i].getWidth(), images[i].getHeight());
+        images[i].draw(x, y, z, images[i].getWidth(), images[i].getHeight());
         }
         
         if (pointCloudsDraw)
@@ -206,6 +208,24 @@ void ofApp::draw()
     
 }
 
+void ofApp::initGui()
+{
+    for (int i = 0; i < NUMCLUSTERS; i++)
+    {
+        ClusterGui clusterGui;
+        
+        ofxPanel _gui;
+        ofParameter<bool> _drawImages;
+        ofParameter<bool> _drawPointCloud;
+        
+        clusterGui.gui = _gui;
+        clusterGui.drawImages = _drawImages;
+        clusterGui.drawPointCloud = _drawPointCloud;
+        
+        clustersGui.push_back(clusterGui);
+    }
+}
+
 void ofApp::setupGui()
 {
     guiImages.setup();
@@ -215,10 +235,23 @@ void ofApp::setupGui()
     guiPointClouds.setup();
     guiPointClouds.setPosition(guiImages.getPosition().x, guiImages.getHeight());
     guiPointClouds.add(pointCloudsDraw.set("Draw Point Clouds", true));
+    
+    for (int i = 0; i < NUMCLUSTERS; i++)
+    {
+        clustersGui[i].gui.setup();
+        clustersGui[i].gui.setPosition(0, clustersGui[i].gui.getHeight() * (i*3));
+        clustersGui[i].gui.add(clustersGui[i].drawImages.set("Draw Image Cluster: " + ofToString(i+1), true));
+        clustersGui[i].gui.add(clustersGui[i].drawPointCloud.set("Draw Point Cloud Cluster: " + ofToString(i+1), true));
+    }
 }
 
 void ofApp::drawGui()
 {
-    guiImages.draw();
-    guiPointClouds.draw();
+//    guiImages.draw();
+//    guiPointClouds.draw();
+    
+    for (int i = 0; i < NUMCLUSTERS; i++)
+    {
+        clustersGui[i].gui.draw();
+    }
 }
