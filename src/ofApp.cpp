@@ -189,8 +189,21 @@ void ofApp::draw()
 //                imageClusters[i].image.draw(x, y, z, imageClusters[i].image.getWidth(), imageClusters[i].image.getHeight());
 //   
 //            }
+            for (int j = 0; j < NUMCLUSTERS; j++)
+            {
+                if (clustersGui[j].drawImages)
+                {
+                    // then draw the images assigned to that cluster
+                    if (imageClusters[i].clusterIndex == j)
+                    {
+                        imageClusters[i].image.draw(x, y, z, imageClusters[i].image.getWidth(), imageClusters[i].image.getHeight());
+                    }
+//                    images[i].draw(x, y, z, images[i].getWidth(), images[i].getHeight());
+                    
+                }
+            }
             
-        images[i].draw(x, y, z, images[i].getWidth(), images[i].getHeight());
+//        images[i].draw(x, y, z, images[i].getWidth(), images[i].getHeight());
         }
         
         if (pointCloudsDraw)
