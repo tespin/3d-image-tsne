@@ -6,6 +6,7 @@
 #include "ofxAssignment.h"
 #include "ofxLearn.h"
 #include "ofxGui.h"
+#include "ofxMarchingCubes.h"
 
 //#define NUMIMAGES 1500
 //#define NUMCLUSTERS 11
