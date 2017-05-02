@@ -2,4 +2,6 @@ ofxAssignment
 ofxCcv
 ofxGui
 ofxLearn
+ofxMarchingCubes
+ofxSTL
 ofxTSNE
