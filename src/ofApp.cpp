@@ -37,9 +37,9 @@ void ofApp::setup()
     string imageSavePath = "test-3d-tsne-scanner-darkly.png";
     
     // test
-    nx = 8;
-    ny = 8;
-    nz = 8;
+    nx = 15;
+    ny = 10;
+    nz = 10;
     
     // development
 //    nx = 10;
