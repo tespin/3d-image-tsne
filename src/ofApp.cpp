@@ -127,8 +127,8 @@ void ofApp::setup()
     clusterer.train();
     clusters = clusterer.getClusters();
     
-    
-    for (int i = 0; i < clusters.size(); i++) {
+    for (int i = 0; i < clusters.size(); i++)
+    {
         Cluster cluster;
         
         cluster.clusterIndex = clusters[i];
@@ -140,12 +140,12 @@ void ofApp::setup()
         
         imageClusters.push_back(cluster);
         
-//        std::cout << "Image: " << i << " Assigned to: " << imageClusters[i].clusterIndex << " Actual cluster: " << clusters[i] << std::endl;
-        
 //        cout << "Instance " << ofToString(i) << " " << ofToString(instances[i]) << " assigned to cluster " << ofToString(clusters[i]) << endl;
+        
     }
     
-    for (int i = 0; i < NUMCLUSTERS; i++) {
+    for (int i = 0; i < NUMCLUSTERS; i++)
+    {
         
         colors[i] = ofColor( ofRandom(255), ofRandom(255), ofRandom(255) );
     }
@@ -183,7 +183,6 @@ void ofApp::draw()
                 if (clustersGui[j].drawImages)
                 {
                     ofSetColor(255, 255, 255);
-//                    imageClusters[i].image.draw(x, y, z, imageClusters[i].image.getWidth(), imageClusters[i].image.getHeight());
                     images[i].draw(x, y, z, images[i].getWidth(), images[i].getHeight());
                 }
                 
@@ -197,6 +196,7 @@ void ofApp::draw()
         }
         
     }
+    
     cam.end();
     ofDisableDepthTest();
     drawGui();
@@ -230,7 +230,6 @@ void ofApp::setupGui()
 {
     for (int i = 0; i < NUMCLUSTERS; i++)
     {
-        
         clustersGui[i].gui.setup();
         clustersGui[i].gui.setPosition(0, clustersGui[i].gui.getHeight() * (i*4));
         clustersGui[i].gui.add(clustersGui[i].drawImages.set("Draw Image Cluster: " + ofToString(i+1), true));
