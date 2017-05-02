@@ -7,11 +7,11 @@
 #include "ofxLearn.h"
 #include "ofxGui.h"
 
-#define NUMIMAGES 1500
-#define NUMCLUSTERS 11
+//#define NUMIMAGES 1500
+//#define NUMCLUSTERS 11
 
-//#define NUMIMAGES 512
-//#define NUMCLUSTERS 3
+#define NUMIMAGES 512
+#define NUMCLUSTERS 3
 
 class ofApp : public ofBaseApp{
 
