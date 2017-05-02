@@ -32,9 +32,9 @@ void ofApp::scan_dir_imgs(ofDirectory dir)
 void ofApp::setup()
 {
 
-    string imageDir = "/YOUR/DIRECTORY/HERE";
+    string imageDir = "/Users/tespin/Documents/openFrameworks/apps/myApps/00_BatchFeatureEncoder/bin/data/image-set-a-scanner-darkly-2";
     
-    string imageSavePath = "test-3d-tsne.png";
+    string imageSavePath = "test-3d-tsne-scanner-darkly.png";
     
     // development
 //    nx = 15;
@@ -52,8 +52,6 @@ void ofApp::setup()
     
     perplexity = 50;
     theta = 0.3;
-    
-//    ofEnableDepthTest();
     
     scale = 2;
     
@@ -123,8 +121,6 @@ void ofApp::setup()
         instances[i].push_back(tsneVecs[i][1]);
         instances[i].push_back(tsneVecs[i][2]);
         clusterer.addSample(instances[i]);
-        
-        
     }
     
     clusterer.setNumClusters(NUMCLUSTERS);
@@ -156,6 +152,7 @@ void ofApp::setup()
     
     // find cluster -> iterate through vertices -> check for verts inside mesh -> save out as obj
     // save points?
+    
     initGui();
     setupGui();
 }
@@ -231,14 +228,6 @@ void ofApp::initGui()
 
 void ofApp::setupGui()
 {
-    guiImages.setup();
-    guiImages.setPosition(0, 0);
-    guiImages.add(imagesDraw.set("Draw Images", true));
-    
-    guiPointClouds.setup();
-    guiPointClouds.setPosition(guiImages.getPosition().x, guiImages.getHeight());
-    guiPointClouds.add(pointCloudsDraw.set("Draw Point Clouds", true));
-    
     for (int i = 0; i < NUMCLUSTERS; i++)
     {
         
@@ -252,9 +241,6 @@ void ofApp::setupGui()
 
 void ofApp::drawGui()
 {
-//    guiImages.draw();
-//    guiPointClouds.draw();
-    
     for (int i = 0; i < NUMCLUSTERS; i++)
     {
         clustersGui[i].gui.draw();

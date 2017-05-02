@@ -69,13 +69,6 @@ class ofApp : public ofBaseApp{
         
         vector<ofVec3f> initial, grid;
         
-        ofxPanel guiImages;
-        ofxPanel guiPointClouds;
-        
-        ofParameter<bool> imagesDraw;
-        ofParameter<bool> pointCloudsDraw;
-        ofParameter<float> testFloat;
-        
         ofSpherePrimitive sphere;
         
         int nx, ny, nz;
