@@ -180,38 +180,67 @@ void ofApp::draw()
         float y = scale * (ny - 1) * h * solvedGrid[i].y;
         float z = scale * (nz - 1) * d * solvedGrid[i].z;
         
-        if (imagesDraw)
+        for (int j = 0; j < NUMCLUSTERS; j++)
         {
-        ofSetColor(255, 255, 255);
-            
-//            if (imageClusters[i].clusterIndex == 1)
-//            {
-//                imageClusters[i].image.draw(x, y, z, imageClusters[i].image.getWidth(), imageClusters[i].image.getHeight());
-//   
-//            }
-            for (int j = 0; j < NUMCLUSTERS; j++)
+            if (clustersGui[j].drawImages)
             {
-                if (clustersGui[j].drawImages)
+                // then draw the images assigned to that cluster
+                if (imageClusters[i].clusterIndex == j)
                 {
-                    // then draw the images assigned to that cluster
-                    if (imageClusters[i].clusterIndex == j)
-                    {
-                        imageClusters[i].image.draw(x, y, z, imageClusters[i].image.getWidth(), imageClusters[i].image.getHeight());
-                    }
-//                    images[i].draw(x, y, z, images[i].getWidth(), images[i].getHeight());
-                    
+                    ofSetColor(255, 255, 255);
+                    imageClusters[i].image.draw(x, y, z, imageClusters[i].image.getWidth(), imageClusters[i].image.getHeight());
                 }
+                //                    images[i].draw(x, y, z, images[i].getWidth(), images[i].getHeight());
+                
             }
             
-//        images[i].draw(x, y, z, images[i].getWidth(), images[i].getHeight());
+            if (clustersGui[j].drawPointCloud)
+            {
+                if (imageClusters[i].clusterIndex == j)
+                {
+                    ofSetColor(colors[clusters[i]]);
+                    sphere.setPosition(x + (images[i].getWidth() / 2) , y + (images[i].getHeight() / 2), z);
+                    sphere.draw();
+                }
+            }
         }
         
-        if (pointCloudsDraw)
-        {
-        ofSetColor(colors[clusters[i]]);
-        sphere.setPosition(x + (images[i].getWidth() / 2) , y + (images[i].getHeight() / 2), z);
-        sphere.draw();
-        }
+        
+        
+        
+        
+//        if (imagesDraw)
+//        {
+//        ofSetColor(255, 255, 255);
+//            
+////            if (imageClusters[i].clusterIndex == 1)
+////            {
+////                imageClusters[i].image.draw(x, y, z, imageClusters[i].image.getWidth(), imageClusters[i].image.getHeight());
+////   
+////            }
+//            for (int j = 0; j < NUMCLUSTERS; j++)
+//            {
+//                if (clustersGui[j].drawImages)
+//                {
+//                    // then draw the images assigned to that cluster
+//                    if (imageClusters[i].clusterIndex == j)
+//                    {
+//                        imageClusters[i].image.draw(x, y, z, imageClusters[i].image.getWidth(), imageClusters[i].image.getHeight());
+//                    }
+////                    images[i].draw(x, y, z, images[i].getWidth(), images[i].getHeight());
+//                    
+//                }
+//            }
+//            
+////        images[i].draw(x, y, z, images[i].getWidth(), images[i].getHeight());
+//        }
+//        
+//        if (pointCloudsDraw)
+//        {
+//        ofSetColor(colors[clusters[i]]);
+//        sphere.setPosition(x + (images[i].getWidth() / 2) , y + (images[i].getHeight() / 2), z);
+//        sphere.draw();
+//        }
 
 //        std::cout << "x: " << x << " , y: " << y << " , z: " << z << endl;
     }
