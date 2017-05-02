@@ -32,9 +32,9 @@ void ofApp::scan_dir_imgs(ofDirectory dir)
 void ofApp::setup()
 {
 
-    string imageDir = "/Users/tespin/Documents/openFrameworks/apps/myApps/00_BatchFeatureEncoder/bin/data/image-set-a-scanner-darkly-2";
+    string imageDir = "/YOUR/DIRECTORY/HERE";
     
-    string imageSavePath = "test-3d-tsne-scanner-darkly.png";
+    string imageSavePath = "test-3d-tsne.png";
     
     // development
 //    nx = 15;
