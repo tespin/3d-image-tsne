@@ -20,69 +20,71 @@ class ofApp : public ofBaseApp{
 		void update();
 		void draw();
     
-    void setupGui();
-    void drawGui();
+        void initGui();
+        void setupGui();
+        void drawGui();
+        
+        void scan_dir_imgs(ofDirectory dir);
     
-    void initGui();
+        void saveButtonPressed();
     
-    void scan_dir_imgs(ofDirectory dir);
+        struct Cluster
+        {
+            ofImage image;
+            int clusterIndex;
+        };
+        
+        std::vector<Cluster> imageClusters;
+        
+        struct ClusterGui
+        {
+            ofxPanel gui;
+            ofParameter<bool> drawImages;
+            ofParameter<bool> drawPointCloud;
+            ofxButton saveButton;
+        };
+        
+        std::vector<ClusterGui> clustersGui;
+        
+        ofxCcv ccv;
+        
+        ofxTSNE tsne;
+        vector<ofVec3f> tsnePoints;
+        
+        ofxLearnKMeans clusterer;
+        vector<double> instances[NUMIMAGES];
+        vector<int> clusters;
+        ofColor colors[NUMCLUSTERS];
+        
+        ofEasyCam cam;
+        ofxAssignment solver;
+        
+        vector<ofFile> imageFiles;
+        vector<ofImage> images;
+        vector<vector<float>> encodings;
+        vector<vector<ofxCcv::Classification>> results;
+        vector<ofxCcv::Classification> classification;
+        vector<vector<double>> tsneVecs;
+        vector<ofVec3f> solvedGrid, gridPoints;
+        
+        vector<ofVec3f> initial, grid;
+        
+        ofxPanel guiImages;
+        ofxPanel guiPointClouds;
+        
+        ofParameter<bool> imagesDraw;
+        ofParameter<bool> pointCloudsDraw;
+        ofParameter<float> testFloat;
+        
+        ofSpherePrimitive sphere;
+        
+        int nx, ny, nz;
+        int w, h, d;
+        float perplexity, theta;
+        float scale;
     
-    struct Cluster
-    {
-        // details on cluster ...
-        // expose features?
-        ofImage image;
-        int clusterIndex;
-    };
+        int buttonPress;
     
-    std::vector<Cluster> imageClusters;
-    
-    struct ClusterGui
-    {
-        ofxPanel gui;
-        ofParameter<bool> drawImages;
-        ofParameter<bool> drawPointCloud;
-    };
-    
-    std::vector<ClusterGui> clustersGui;
-    
-    ofxCcv ccv;
-    
-    ofxTSNE tsne;
-    vector<ofVec3f> tsnePoints;
-    
-    ofxLearnKMeans clusterer;
-    vector<double> instances[NUMIMAGES];
-    vector<int> clusters;
-    ofColor colors[NUMCLUSTERS];
-    
-    ofEasyCam cam;
-    ofxAssignment solver;
-    
-    vector<ofFile> imageFiles;
-    vector<ofImage> images;
-    vector<vector<float>> encodings;
-    vector<vector<ofxCcv::Classification>> results;
-    vector<ofxCcv::Classification> classification;
-    vector<vector<double>> tsneVecs;
-    vector<ofVec3f> solvedGrid, gridPoints;
-    
-    vector<ofVec3f> initial, grid;
-    
-    ofxPanel guiImages;
-    ofxPanel guiPointClouds;
-    
-    ofParameter<bool> imagesDraw;
-    ofParameter<bool> pointCloudsDraw;
-    ofParameter<float> testFloat;
-    
-    ofSpherePrimitive sphere;
-    
-    int nx, ny, nz;
-    int w, h, d;
-    float perplexity, theta;
-    float scale;
-    
-    bool runManually;
+        bool runManually;
 		
 };

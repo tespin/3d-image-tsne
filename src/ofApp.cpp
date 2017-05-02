@@ -36,15 +36,15 @@ void ofApp::setup()
     
     string imageSavePath = "test-3d-tsne-scanner-darkly.png";
     
-    // test
+    // development
     nx = 15;
     ny = 10;
     nz = 10;
     
-    // development
-//    nx = 10;
-//    ny = 10;
-//    nz = 10;
+    // test
+//    nx = 8;
+//    ny = 8;
+//    nz = 8;
     
     w = 256;
     h = 256;
@@ -144,7 +144,7 @@ void ofApp::setup()
         
         imageClusters.push_back(cluster);
         
-        std::cout << "Image: " << i << " Assigned to: " << imageClusters[i].clusterIndex << " Actual cluster: " << clusters[i] << std::endl;
+//        std::cout << "Image: " << i << " Assigned to: " << imageClusters[i].clusterIndex << " Actual cluster: " << clusters[i] << std::endl;
         
 //        cout << "Instance " << ofToString(i) << " " << ofToString(instances[i]) << " assigned to cluster " << ofToString(clusters[i]) << endl;
     }
@@ -162,7 +162,6 @@ void ofApp::setup()
 
 void ofApp::update()
 {
-
 }
 
 void ofApp::draw()
@@ -182,67 +181,24 @@ void ofApp::draw()
         
         for (int j = 0; j < NUMCLUSTERS; j++)
         {
-            if (clustersGui[j].drawImages)
+            if (imageClusters[i].clusterIndex == j)
             {
-                // then draw the images assigned to that cluster
-                if (imageClusters[i].clusterIndex == j)
+                if (clustersGui[j].drawImages)
                 {
                     ofSetColor(255, 255, 255);
-                    imageClusters[i].image.draw(x, y, z, imageClusters[i].image.getWidth(), imageClusters[i].image.getHeight());
+//                    imageClusters[i].image.draw(x, y, z, imageClusters[i].image.getWidth(), imageClusters[i].image.getHeight());
+                    images[i].draw(x, y, z, images[i].getWidth(), images[i].getHeight());
                 }
-                //                    images[i].draw(x, y, z, images[i].getWidth(), images[i].getHeight());
                 
-            }
-            
-            if (clustersGui[j].drawPointCloud)
-            {
-                if (imageClusters[i].clusterIndex == j)
+                if (clustersGui[j].drawPointCloud)
                 {
                     ofSetColor(colors[clusters[i]]);
-                    sphere.setPosition(x + (images[i].getWidth() / 2) , y + (images[i].getHeight() / 2), z);
+                    sphere.setPosition(x + (imageClusters[i].image.getWidth() / 2) , y + (imageClusters[i].image.getHeight() / 2), z);
                     sphere.draw();
                 }
             }
         }
         
-        
-        
-        
-        
-//        if (imagesDraw)
-//        {
-//        ofSetColor(255, 255, 255);
-//            
-////            if (imageClusters[i].clusterIndex == 1)
-////            {
-////                imageClusters[i].image.draw(x, y, z, imageClusters[i].image.getWidth(), imageClusters[i].image.getHeight());
-////   
-////            }
-//            for (int j = 0; j < NUMCLUSTERS; j++)
-//            {
-//                if (clustersGui[j].drawImages)
-//                {
-//                    // then draw the images assigned to that cluster
-//                    if (imageClusters[i].clusterIndex == j)
-//                    {
-//                        imageClusters[i].image.draw(x, y, z, imageClusters[i].image.getWidth(), imageClusters[i].image.getHeight());
-//                    }
-////                    images[i].draw(x, y, z, images[i].getWidth(), images[i].getHeight());
-//                    
-//                }
-//            }
-//            
-////        images[i].draw(x, y, z, images[i].getWidth(), images[i].getHeight());
-//        }
-//        
-//        if (pointCloudsDraw)
-//        {
-//        ofSetColor(colors[clusters[i]]);
-//        sphere.setPosition(x + (images[i].getWidth() / 2) , y + (images[i].getHeight() / 2), z);
-//        sphere.draw();
-//        }
-
-//        std::cout << "x: " << x << " , y: " << y << " , z: " << z << endl;
     }
     cam.end();
     ofDisableDepthTest();
@@ -259,10 +215,15 @@ void ofApp::initGui()
         ofxPanel _gui;
         ofParameter<bool> _drawImages;
         ofParameter<bool> _drawPointCloud;
+        ofxButton _button;
         
         clusterGui.gui = _gui;
         clusterGui.drawImages = _drawImages;
         clusterGui.drawPointCloud = _drawPointCloud;
+        clusterGui.saveButton = _button;
+        
+//        clusterGui.saveButton.addListener(ofEvents().mousePressed, this, &ofApp::saveButtonPressed);
+//        if (i < 1) clusterGui.saveButton.addListener(ofEvents.mouseReleased ,this, &ofApp::saveButtonPressed);
         
         clustersGui.push_back(clusterGui);
     }
@@ -280,10 +241,12 @@ void ofApp::setupGui()
     
     for (int i = 0; i < NUMCLUSTERS; i++)
     {
+        
         clustersGui[i].gui.setup();
-        clustersGui[i].gui.setPosition(0, clustersGui[i].gui.getHeight() * (i*3));
+        clustersGui[i].gui.setPosition(0, clustersGui[i].gui.getHeight() * (i*4));
         clustersGui[i].gui.add(clustersGui[i].drawImages.set("Draw Image Cluster: " + ofToString(i+1), true));
         clustersGui[i].gui.add(clustersGui[i].drawPointCloud.set("Draw Point Cloud Cluster: " + ofToString(i+1), true));
+        clustersGui[i].gui.add(clustersGui[i].saveButton.setup("Save"));
     }
 }
 
@@ -296,4 +259,11 @@ void ofApp::drawGui()
     {
         clustersGui[i].gui.draw();
     }
+}
+
+void ofApp::saveButtonPressed()
+{
+    // save
+    buttonPress++;
+    std::cout << "Button pressed " << buttonPress << " times!" << endl;
 }
