@@ -14,6 +14,22 @@
 #define NUMIMAGES 512
 #define NUMCLUSTERS 4
 
+struct Cluster
+{
+    ofImage image;
+    int clusterIndex;
+    
+    std::vector<ofVec3f> vertices;
+};
+
+struct ClusterGui
+{
+    ofxPanel gui;
+    ofParameter<bool> drawImages;
+    ofParameter<bool> drawPointCloud;
+    ofxButton saveButton;
+};
+
 class ofApp : public ofBaseApp{
 
 	public:
@@ -29,24 +45,7 @@ class ofApp : public ofBaseApp{
     
         void saveButtonPressed();
     
-        struct Cluster
-        {
-            ofImage image;
-            int clusterIndex;
-            
-            std::vector<ofVec3f> vertices;
-        };
-        
         std::vector<Cluster> imageClusters;
-        
-        struct ClusterGui
-        {
-            ofxPanel gui;
-            ofParameter<bool> drawImages;
-            ofParameter<bool> drawPointCloud;
-            ofxButton saveButton;
-        };
-        
         std::vector<ClusterGui> clustersGui;
         
         ofxCcv ccv;
