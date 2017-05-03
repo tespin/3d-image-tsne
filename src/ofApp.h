@@ -7,6 +7,7 @@
 #include "ofxLearn.h"
 #include "ofxGui.h"
 #include "ofxMarchingCubes.h"
+#include "Cluster.h"
 
 //#define NUMIMAGES 1500
 //#define NUMCLUSTERS 11
@@ -14,7 +15,7 @@
 #define NUMIMAGES 512
 #define NUMCLUSTERS 4
 
-struct Cluster
+struct ClusterStruct
 {
     ofImage image;
     int clusterIndex;
@@ -45,7 +46,9 @@ class ofApp : public ofBaseApp{
     
         void saveButtonPressed();
     
-        std::vector<Cluster> imageClusters;
+        std::vector<Cluster> clusterVector;
+    
+        std::vector<ClusterStruct> imageClusters;
         std::vector<ClusterGui> clustersGui;
         
         ofxCcv ccv;

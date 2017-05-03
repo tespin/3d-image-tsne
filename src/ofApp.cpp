@@ -135,16 +135,21 @@ void ofApp::setup()
     
     for (int i = 0; i < clusters.size(); i++)
     {
-        Cluster cluster;
+//        ClusterStruct cluster;
         
-        cluster.clusterIndex = clusters[i];
+//        cluster.clusterIndex = clusters[i];
+        
+        Cluster cluster;
+        cluster.setClusterIndex(clusters[i]);
         
         for (int j = 0; j < images.size(); j++)
         {
-            cluster.image = images[j];
+//            cluster.image = images[j];
+            cluster.setClusterImage(images[j]);
         }
         
-        imageClusters.push_back(cluster);
+        clusterVector.push_back(cluster);
+//        imageClusters.push_back(cluster);
         
 //        cout << "Instance " << ofToString(i) << " " << ofToString(instances[i]) << " assigned to cluster " << ofToString(clusters[i]) << endl;
         
@@ -185,7 +190,7 @@ void ofApp::draw()
         
         for (int j = 0; j < NUMCLUSTERS; j++)
         {
-            if (imageClusters[i].clusterIndex == j)
+            if (clusterVector[i].getClusterIndex() == j)
             {
                 if (clustersGui[j].drawImages)
                 {
@@ -196,10 +201,25 @@ void ofApp::draw()
                 if (clustersGui[j].drawPointCloud)
                 {
                     ofSetColor(colors[clusters[i]]);
-                    sphere.setPosition(x + (imageClusters[i].image.getWidth() / 2) , y + (imageClusters[i].image.getHeight() / 2), z);
+                    sphere.setPosition(x + (clusterVector[i].image.getWidth() / 2) , y + (clusterVector[i].image.getHeight() / 2), z);
                     sphere.draw();
                 }
             }
+//            if (imageClusters[i].clusterIndex == j)
+//            {
+//                if (clustersGui[j].drawImages)
+//                {
+//                    ofSetColor(255, 255, 255);
+//                    images[i].draw(x, y, z, images[i].getWidth(), images[i].getHeight());
+//                }
+//                
+//                if (clustersGui[j].drawPointCloud)
+//                {
+//                    ofSetColor(colors[clusters[i]]);
+//                    sphere.setPosition(x + (imageClusters[i].image.getWidth() / 2) , y + (imageClusters[i].image.getHeight() / 2), z);
+//                    sphere.draw();
+//                }
+//            }
         }
         
     }
