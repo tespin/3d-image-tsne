@@ -8,6 +8,11 @@
 
 #include "Cluster.h"
 
+void Cluster::setVertex(ofVec3f _vec3f)
+{
+    vertex = _vec3f;
+}
+
 void Cluster::setClusterIndex(int _cluster)
 {
     clusterIndex = _cluster;
@@ -18,9 +23,9 @@ void Cluster::setClusterImage(ofImage _image)
     image = _image;
 }
 
-std::vector<ofVec3f> Cluster::getVerts()
+ofVec3f Cluster::getVertex()
 {
-    return vertices;
+    return vertex;
 }
 
 int Cluster::getClusterIndex()

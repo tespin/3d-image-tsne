@@ -15,14 +15,15 @@ class Cluster
     
     public:
     
+        void setVertex(ofVec3f _vec3f);
         void setClusterIndex(int _cluster);
         void setClusterImage(ofImage _image);
     
-        std::vector<ofVec3f> getVerts();
+        ofVec3f getVertex();
         int getClusterIndex();
     
         ofImage image;
         int clusterIndex;
-        std::vector <ofVec3f> vertices;
+        ofVec3f vertex;
     
 };

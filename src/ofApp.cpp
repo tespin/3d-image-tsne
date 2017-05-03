@@ -31,7 +31,7 @@ void ofApp::scan_dir_imgs(ofDirectory dir)
 
 void ofApp::setup()
 {
-
+    
     string imageDir = "/Users/tespin/Documents/openFrameworks/apps/myApps/00_BatchFeatureEncoder/bin/data/image-set-a-scanner-darkly-2";
     
     string imageSavePath = "test-3d-tsne-scanner-darkly.png";
@@ -164,6 +164,10 @@ void ofApp::setup()
     // find cluster -> iterate through vertices -> check for verts inside mesh -> save out as obj
     // save points?
     
+    showCubes = false;
+    modelRendered = false;
+    saveModel = false;
+    
     initGui();
     setupGui();
 }
@@ -184,9 +188,13 @@ void ofApp::draw()
     
     for (int i = 0; i < solvedGrid.size(); i++)
     {
+        
         float x = scale * (nx - 1) * w * solvedGrid[i].x;
         float y = scale * (ny - 1) * h * solvedGrid[i].y;
         float z = scale * (nz - 1) * d * solvedGrid[i].z;
+        
+        ofVec3f vert(x + (clusterVector[i].image.getWidth() / 2) , y + (clusterVector[i].image.getHeight() / 2), z);
+        clusterVector[i].setVertex(vert);
         
         for (int j = 0; j < NUMCLUSTERS; j++)
         {
@@ -204,6 +212,34 @@ void ofApp::draw()
                     sphere.setPosition(x + (clusterVector[i].image.getWidth() / 2) , y + (clusterVector[i].image.getHeight() / 2), z);
                     sphere.draw();
                 }
+                
+//                if (clustersGui[j].save)
+//                {
+//                    saveModel = true;
+//                    mesh.addVertex(clusterVector[i].getVertex());
+//                    passToCluster(j);
+////                    marchingCubes.saveModel(ofToDataPath("cluster_" + ofToString(j) + ".stl"));
+////                    std::cout << "Saving cluster " << ofToString(j+1) << "!" << std::endl;
+//                    
+//                }
+//                else
+//                {
+//                    saveModel = false;
+//                    if (mesh.getNumVertices() > 0)
+//                    {
+//                        auto vertices = mesh.getVertices();
+//                        
+//                        for (int i = 0; i < mesh.getNumVertices(); i++)
+//                        {
+//                            ofVec3f vertex = vertices.at(i);
+//                            ofPoint p = ofPoint(vertex.x, vertex.y, vertex.z);
+//                            marchingCubes.addMetaBall(p, 0.2);
+//                        }
+//                        
+//                        marchingCubes.update(1.7, true);
+//                    }
+//                    
+//                }
             }
 //            if (imageClusters[i].clusterIndex == j)
 //            {
@@ -239,12 +275,14 @@ void ofApp::initGui()
         ofxPanel _gui;
         ofParameter<bool> _drawImages;
         ofParameter<bool> _drawPointCloud;
-        ofxButton _button;
+//        ofxButton _button;
+        ofParameter<bool> _save;
         
         clusterGui.gui = _gui;
         clusterGui.drawImages = _drawImages;
         clusterGui.drawPointCloud = _drawPointCloud;
-        clusterGui.saveButton = _button;
+//        clusterGui.saveButton = _button;
+        clusterGui.save = _save;
         
 //        clusterGui.saveButton.addListener(ofEvents().mousePressed, this, &ofApp::saveButtonPressed);
 //        if (i < 1) clusterGui.saveButton.addListener(ofEvents.mouseReleased ,this, &ofApp::saveButtonPressed);
@@ -261,7 +299,7 @@ void ofApp::setupGui()
         clustersGui[i].gui.setPosition(0, clustersGui[i].gui.getHeight() * (i*4));
         clustersGui[i].gui.add(clustersGui[i].drawImages.set("Draw Image Cluster: " + ofToString(i+1), true));
         clustersGui[i].gui.add(clustersGui[i].drawPointCloud.set("Draw Point Cloud Cluster: " + ofToString(i+1), true));
-        clustersGui[i].gui.add(clustersGui[i].saveButton.setup("Save"));
+        clustersGui[i].gui.add(clustersGui[i].save.set("Save", false));
     }
 }
 
@@ -272,6 +310,22 @@ void ofApp::drawGui()
         clustersGui[i].gui.draw();
     }
 }
+
+//void ofApp::keyReleased(int key)
+//{
+//    saveToSTL(clusterIndex);
+//}
+//
+//void ofApp::passToCluster(int _clusterIndex)
+//{
+//    clusterIndex = _clusterIndex;
+//}
+//
+//void ofApp::saveToSTL(int _cluster)
+//{
+//    marchingCubes.saveModel(ofToDataPath("cluster_" + ofToString(_cluster) + ".stl"));
+//    std::cout << "Saving cluster " << ofToString(_cluster+1) << "!" << std::endl;
+//}
 
 void ofApp::saveButtonPressed()
 {

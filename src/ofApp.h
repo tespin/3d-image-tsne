@@ -28,7 +28,8 @@ struct ClusterGui
     ofxPanel gui;
     ofParameter<bool> drawImages;
     ofParameter<bool> drawPointCloud;
-    ofxButton saveButton;
+    ofParameter<bool> save;
+//    ofxButton saveButton;
 };
 
 class ofApp : public ofBaseApp{
@@ -41,10 +42,15 @@ class ofApp : public ofBaseApp{
         void initGui();
         void setupGui();
         void drawGui();
-        
+    
+//        void keyReleased(int key);
+    
         void scan_dir_imgs(ofDirectory dir);
     
         void saveButtonPressed();
+    
+//    void saveToSTL(int _clusters);
+//    void passToCluster(int _clusterIndex);
     
         std::vector<Cluster> clusterVector;
     
@@ -84,8 +90,14 @@ class ofApp : public ofBaseApp{
         float perplexity, theta;
         float scale;
     
+    int clusterIndex;
+    
         int buttonPress;
     
         bool runManually;
+    
+    bool showCubes;
+    bool modelRendered;
+    bool saveModel;
 		
 };
