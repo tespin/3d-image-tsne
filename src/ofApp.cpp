@@ -32,19 +32,24 @@ void ofApp::scan_dir_imgs(ofDirectory dir)
 void ofApp::setup()
 {
 
-    string imageDir = "/YOUR/DIRECTORY/HERE";
+    string imageDir = "/Users/tespin/Documents/openFrameworks/apps/myApps/00_BatchFeatureEncoder/bin/data/image-set-a-scanner-darkly-2";
     
-    string imageSavePath = "test-3d-tsne.png";
+    string imageSavePath = "test-3d-tsne-scanner-darkly.png";
     
     // development
 //    nx = 15;
 //    ny = 10;
 //    nz = 10;
     
+    ofVec3f initPos(0, 0, 0);
+    ofVec3f gridSize(7500, 4000, 12000);
+    
     // test
     nx = 8;
     ny = 8;
     nz = 8;
+    
+    marchingCubes.init(initPos, gridSize, nx, ny, nz);
     
     w = 256;
     h = 256;
@@ -115,6 +120,7 @@ void ofApp::setup()
     
     sphere.setRadius(50);
     
+    mesh.setMode(OF_PRIMITIVE_POINTS);
     for (int i = 0; i < NUMIMAGES; i++)
     {
         instances[i].push_back(tsneVecs[i][0]);
@@ -159,6 +165,7 @@ void ofApp::setup()
 
 void ofApp::update()
 {
+    std::cout << "Position: " << cam.getPosition() << std::endl;
 }
 
 void ofApp::draw()

@@ -12,7 +12,7 @@
 //#define NUMCLUSTERS 11
 
 #define NUMIMAGES 512
-#define NUMCLUSTERS 3
+#define NUMCLUSTERS 4
 
 class ofApp : public ofBaseApp{
 
@@ -33,6 +33,8 @@ class ofApp : public ofBaseApp{
         {
             ofImage image;
             int clusterIndex;
+            
+            std::vector<ofVec3f> vertices;
         };
         
         std::vector<Cluster> imageClusters;
@@ -56,7 +58,10 @@ class ofApp : public ofBaseApp{
         vector<double> instances[NUMIMAGES];
         vector<int> clusters;
         ofColor colors[NUMCLUSTERS];
-        
+    
+        ofxMarchingCubes marchingCubes;
+        ofMesh mesh;
+    
         ofEasyCam cam;
         ofxAssignment solver;
         
