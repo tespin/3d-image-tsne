@@ -10,7 +10,7 @@
 
 #include "ofMain.h"
 
-class Cluster
+class Instance
 {
     
     public:

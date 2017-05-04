@@ -7,7 +7,7 @@
 #include "ofxLearn.h"
 #include "ofxGui.h"
 #include "ofxMarchingCubes.h"
-#include "Cluster.h"
+#include "Instance.h"
 
 //#define NUMIMAGES 1500
 //#define NUMCLUSTERS 11
@@ -15,12 +15,16 @@
 #define NUMIMAGES 512
 #define NUMCLUSTERS 4
 
-struct ClusterStruct
+//struct Instance
+//{
+//    ofImage image;
+//    int clusterIndex;
+//    ofVec3f vertex;
+//};
+
+struct Cluster
 {
-    ofImage image;
-    int clusterIndex;
     
-    std::vector<ofVec3f> vertices;
 };
 
 struct ClusterGui
@@ -43,18 +47,20 @@ class ofApp : public ofBaseApp{
         void setupGui();
         void drawGui();
     
-//        void keyReleased(int key);
+        void keyReleased(int key);
     
         void scan_dir_imgs(ofDirectory dir);
     
         void saveButtonPressed();
     
 //    void saveToSTL(int _clusters);
-//    void passToCluster(int _clusterIndex);
+    void passToCluster(int _clusterIndex);
     
-        std::vector<Cluster> clusterVector;
-    
-        std::vector<ClusterStruct> imageClusters;
+//        std::vector<Cluster> clusterVector;
+        std::vector<Instance> instanceVector;
+//    std::vector<Cluster> clusterVector;
+    std::vector<std::vector<Instance> > clusterVector;
+//        std::vector<ClusterStruct> imageClusters;
         std::vector<ClusterGui> clustersGui;
         
         ofxCcv ccv;
@@ -90,14 +96,15 @@ class ofApp : public ofBaseApp{
         float perplexity, theta;
         float scale;
     
-    int clusterIndex;
+        int limit;
+        int clusterIndex;
     
         int buttonPress;
     
         bool runManually;
     
-    bool showCubes;
-    bool modelRendered;
-    bool saveModel;
+        bool showCubes;
+        bool modelRendered;
+        bool saveModel;
 		
 };

@@ -135,31 +135,39 @@ void ofApp::setup()
     
     for (int i = 0; i < clusters.size(); i++)
     {
-//        ClusterStruct cluster;
-        
-//        cluster.clusterIndex = clusters[i];
-        
-        Cluster cluster;
-        cluster.setClusterIndex(clusters[i]);
+        Instance instance;
+        instance.setClusterIndex(clusters[i]);
         
         for (int j = 0; j < images.size(); j++)
         {
-//            cluster.image = images[j];
-            cluster.setClusterImage(images[j]);
+            instance.setClusterImage(images[j]);
+            instance.setVertex(ofVec3f(tsneVecs[i][0], tsneVecs[i][1], tsneVecs[i][2]));
         }
         
-        clusterVector.push_back(cluster);
-//        imageClusters.push_back(cluster);
-        
+        instanceVector.push_back(instance);
 //        cout << "Instance " << ofToString(i) << " " << ofToString(instances[i]) << " assigned to cluster " << ofToString(clusters[i]) << endl;
         
     }
     
     for (int i = 0; i < NUMCLUSTERS; i++)
     {
+        std::vector<Instance> cluster;
+        clusterVector.push_back(cluster);
+        
+        for (int j = 0; j < instanceVector.size(); j++)
+        {
+            if (instanceVector[j].clusterIndex == i)
+            {
+                clusterVector[i].push_back(instanceVector[j]);
+                // for individual vector cluster[i] in clusterVector, push back instance [j]
+                // where each individual vector cluster[i] is a vector of instances
+                // push into proper cluster in vector of clusters
+            }
+        }
         
         colors[i] = ofColor( ofRandom(255), ofRandom(255), ofRandom(255) );
     }
+    
     
     // find cluster -> iterate through vertices -> check for verts inside mesh -> save out as obj
     // save points?
@@ -170,11 +178,24 @@ void ofApp::setup()
     
     initGui();
     setupGui();
+    
+    for (int i = 0; i < clusterVector.size(); i++)
+    {
+        for (int j = 0; j < images.size(); j++)
+        {
+            if (clusterVector[i][j].getClusterIndex() == 2)
+            {
+                std::cout << "Instance " << ofToString(j) << ": " << clusterVector[i][j].getVertex() << std::endl;
+            }
+            
+        }
+    }
+    
 }
 
 void ofApp::update()
 {
-    std::cout << "Position: " << cam.getPosition() << std::endl;
+//    std::cout << "Position: " << cam.getPosition() << std::endl;
 }
 
 void ofApp::draw()
@@ -193,13 +214,16 @@ void ofApp::draw()
         float y = scale * (ny - 1) * h * solvedGrid[i].y;
         float z = scale * (nz - 1) * d * solvedGrid[i].z;
         
-        ofVec3f vert(x + (clusterVector[i].image.getWidth() / 2) , y + (clusterVector[i].image.getHeight() / 2), z);
-        clusterVector[i].setVertex(vert);
+//        ofVec3f vert(x + (clusterVector[i].image.getWidth() / 2) , y + (clusterVector[i].image.getHeight() / 2), z);
+//        clusterVector[i].setVertex(vert);
         
         for (int j = 0; j < NUMCLUSTERS; j++)
         {
-            if (clusterVector[i].getClusterIndex() == j)
+//            if (clusterVector[i].getClusterIndex() == j)
+//            {
+            if (instanceVector[i].getClusterIndex() == j)
             {
+                
                 if (clustersGui[j].drawImages)
                 {
                     ofSetColor(255, 255, 255);
@@ -209,53 +233,10 @@ void ofApp::draw()
                 if (clustersGui[j].drawPointCloud)
                 {
                     ofSetColor(colors[clusters[i]]);
-                    sphere.setPosition(x + (clusterVector[i].image.getWidth() / 2) , y + (clusterVector[i].image.getHeight() / 2), z);
+                    sphere.setPosition(x + (instanceVector[i].image.getWidth() / 2) , y + (instanceVector[i].image.getHeight() / 2), z);
                     sphere.draw();
                 }
-                
-//                if (clustersGui[j].save)
-//                {
-//                    saveModel = true;
-//                    mesh.addVertex(clusterVector[i].getVertex());
-//                    passToCluster(j);
-////                    marchingCubes.saveModel(ofToDataPath("cluster_" + ofToString(j) + ".stl"));
-////                    std::cout << "Saving cluster " << ofToString(j+1) << "!" << std::endl;
-//                    
-//                }
-//                else
-//                {
-//                    saveModel = false;
-//                    if (mesh.getNumVertices() > 0)
-//                    {
-//                        auto vertices = mesh.getVertices();
-//                        
-//                        for (int i = 0; i < mesh.getNumVertices(); i++)
-//                        {
-//                            ofVec3f vertex = vertices.at(i);
-//                            ofPoint p = ofPoint(vertex.x, vertex.y, vertex.z);
-//                            marchingCubes.addMetaBall(p, 0.2);
-//                        }
-//                        
-//                        marchingCubes.update(1.7, true);
-//                    }
-//                    
-//                }
             }
-//            if (imageClusters[i].clusterIndex == j)
-//            {
-//                if (clustersGui[j].drawImages)
-//                {
-//                    ofSetColor(255, 255, 255);
-//                    images[i].draw(x, y, z, images[i].getWidth(), images[i].getHeight());
-//                }
-//                
-//                if (clustersGui[j].drawPointCloud)
-//                {
-//                    ofSetColor(colors[clusters[i]]);
-//                    sphere.setPosition(x + (imageClusters[i].image.getWidth() / 2) , y + (imageClusters[i].image.getHeight() / 2), z);
-//                    sphere.draw();
-//                }
-//            }
         }
         
     }
@@ -311,15 +292,26 @@ void ofApp::drawGui()
     }
 }
 
+void ofApp::keyReleased(int key)
+{
+    if (key == ' ')
+    {
+        if (saveModel)
+        {
+            marchingCubes.saveModel(ofToDataPath("cluster_" + ofToString(clusterIndex) + ".stl"));
+        }
+    }
+}
+
 //void ofApp::keyReleased(int key)
 //{
 //    saveToSTL(clusterIndex);
 //}
 //
-//void ofApp::passToCluster(int _clusterIndex)
-//{
-//    clusterIndex = _clusterIndex;
-//}
+void ofApp::passToCluster(int _clusterIndex)
+{
+    clusterIndex = _clusterIndex;
+}
 //
 //void ofApp::saveToSTL(int _cluster)
 //{
