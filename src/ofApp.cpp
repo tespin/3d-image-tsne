@@ -141,7 +141,7 @@ void ofApp::setup()
         for (int j = 0; j < images.size(); j++)
         {
             instance.setClusterImage(images[j]);
-            instance.setVertex(ofVec3f(tsneVecs[i][0], tsneVecs[i][1], tsneVecs[i][2]));
+//            instance.setVertex(ofVec3f(tsneVecs[i][0], tsneVecs[i][1], tsneVecs[i][2]));
         }
         
         instanceVector.push_back(instance);
@@ -179,23 +179,58 @@ void ofApp::setup()
     initGui();
     setupGui();
     
-    for (int i = 0; i < clusterVector.size(); i++)
-    {
-        for (int j = 0; j < images.size(); j++)
-        {
-            if (clusterVector[i][j].getClusterIndex() == 2)
-            {
-                std::cout << "Instance " << ofToString(j) << ": " << clusterVector[i][j].getVertex() << std::endl;
-            }
-            
-        }
-    }
+//    for (int i = 0; i < clusterVector.size(); i++)
+//    {
+//        for (int j = 0; j < images.size(); j++)
+//        {
+//            if (clusterVector[i][j].getClusterIndex() == 2)
+//            {
+//                std::cout << "Instance " << ofToString(j) << ": " << clusterVector[i][j].getVertex() << std::endl;
+//            }
+//            
+//        }
+//    }
     
 }
 
 void ofApp::update()
 {
-//    std::cout << "Position: " << cam.getPosition() << std::endl;
+    for (int i = 0; i < clusterVector.size(); i++)
+    {
+        for (int j = 0; j < solvedGrid.size(); j++)
+        {
+//            if (clusterVector[i][j].getClusterIndex() == 2)
+//            {
+//                std::cout << "Instance " << ofToString(j) << ": " << clusterVector[i][j].getVertex() << std::endl;
+//            }
+            float xPos = scale * (nx - 1) * w * solvedGrid[j].x;
+            float yPos = scale * (ny - 1) * h * solvedGrid[j].y;
+            float zPos = scale * (nz - 1) * d * solvedGrid[j].z;
+            
+            ofVec3f pos(xPos, yPos, zPos);
+            
+            clusterVector[i][j].setVertex(pos);
+            
+        std::cout << "Instance " << ofToString(j) << ": " << clusterVector[i][j].getVertex() << std::endl;
+
+        }
+    }
+    
+//    for (int i = 0; i < solvedGrid.size(); i++)
+//    {
+//        for (int j = 0; j < clusterVector.size(); j++)
+//        {
+//            float xPos = scale * (nx - 1) * w * solvedGrid[i].x;
+//            float yPos = scale * (ny - 1) * h * solvedGrid[i].y;
+//            float zPos = scale * (nz - 1) * d * solvedGrid[i].z;
+//            
+//            ofVec3f pos(xPos, yPos, zPos);
+//            
+//            clusterVector[i][j].setVertex(pos);
+//            
+//            std::cout << "Instance " << ofToString(j) << ": " << clusterVector[i][j].getVertex() << std::endl;
+//        }
+//    }
 }
 
 void ofApp::draw()
@@ -209,7 +244,6 @@ void ofApp::draw()
     
     for (int i = 0; i < solvedGrid.size(); i++)
     {
-        
         float x = scale * (nx - 1) * w * solvedGrid[i].x;
         float y = scale * (ny - 1) * h * solvedGrid[i].y;
         float z = scale * (nz - 1) * d * solvedGrid[i].z;
@@ -219,6 +253,7 @@ void ofApp::draw()
         
         for (int j = 0; j < NUMCLUSTERS; j++)
         {
+            
 //            if (clusterVector[i].getClusterIndex() == j)
 //            {
             if (instanceVector[i].getClusterIndex() == j)

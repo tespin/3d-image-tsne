@@ -90,7 +90,9 @@ class ofApp : public ofBaseApp{
         vector<ofVec3f> initial, grid;
         
         ofSpherePrimitive sphere;
-        
+    
+        float x, y, z;
+    
         int nx, ny, nz;
         int w, h, d;
         float perplexity, theta;
