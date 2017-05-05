@@ -43,8 +43,14 @@ void ofApp::setup()
     nz = 8;
     
     // still not sure about these numbers?
-    initPos = ofVec3f(0, 0, 0);
-    gridSize = ofVec3f(7500, 4000, 12000);
+    initPos = ofVec3f(1850, 1850, 2100);
+    gridSize = ofVec3f(7000, 7000, 7000);
+    
+    centerSphere.setPosition(initPos);
+    gridSphere.setPosition(gridSize);
+    
+    centerSphere.setRadius(75);
+    gridSphere.setRadius(75);
     
     marchingCubes.init(initPos, gridSize, nx, ny, nz);
     
@@ -191,6 +197,7 @@ void ofApp::setup()
 
 void ofApp::update()
 {
+    
     for (int i = 0; i < instanceVector.size(); i++)
     {
         
@@ -207,7 +214,7 @@ void ofApp::update()
                     {
                         ofVec3f vertex = vertices.at(k);
                         ofPoint p = ofPoint(vertex.x, vertex.y, vertex.z);
-                        marchingCubes.addMetaBall(vertex, 0.8);
+                        marchingCubes.addMetaBall(vertex, 0.2);
 //                        marchingCubes.addMetaBall(p, 0.8);
 //                        std::cout << p << std::endl;
                         std::cout << "Vertex: " << ofToString(vertex) << "added!" << std::endl;
@@ -230,6 +237,7 @@ void ofApp::update()
             
         }
     }
+//    std::cout << cam.getPosition() << std::endl;
 }
 
 void ofApp::draw()
@@ -237,7 +245,9 @@ void ofApp::draw()
     cam.begin();
     ofEnableDepthTest();
     
-    ofBackground(0);
+    ofBackground(255);
+    centerSphere.draw();
+    gridSphere.draw();
     
     float t = ofMap(cos(ofGetElapsedTimef()), -1, 1, 0, 1);
     
