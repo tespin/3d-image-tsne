@@ -16,6 +16,10 @@ class Instance
     
         void assignClusterIndex(int _clusterIndex);
         int getClusterIndex();
+    
+        void setVertex(ofVec3f _vertex);
+        ofVec3f getVertex();
         
         int clusterIndex;
+        ofVec3f vertex;
 };

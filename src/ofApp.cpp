@@ -131,11 +131,6 @@ void ofApp::setup()
 //        cout << "Instance " << ofToString(i) << " " << ofToString(instances[i]) << " assigned to cluster " << ofToString(clusters[i]) << endl;
     }
     
-    for (int i = 0; i < instanceVector.size(); i++)
-    {
-//        std::cout << "Instance " << ofToString(i) << "assigned to actual cluster " << ofToString(instanceVector[i].getClusterIndex()) << std::endl;
-    }
-    
     for (int i = 0; i < NUMCLUSTERS; i++)
     {
         colors[i] = ofColor(ofRandom(255), ofRandom(255), ofRandom(255)) ;
@@ -149,6 +144,17 @@ void ofApp::setup()
         
         ofVec3f pos(x, y, z);
         posVector.push_back(pos);
+    }
+    
+    for (int i = 0; i < instanceVector.size(); i++)
+    {
+        instanceVector[i].setVertex(posVector[i]);
+        
+        // check cluster
+        //        std::cout << "Instance " << ofToString(i) << "assigned to actual cluster " << ofToString(instanceVector[i].getClusterIndex()) << std::endl;
+        
+        // check vertices
+//        std::cout << "Instance: " << ofToString(i) << ", Vertex: " << ofToString(instanceVector[i].getVertex()) << std::endl;
     }
     
     initGui();

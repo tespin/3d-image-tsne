@@ -17,3 +17,13 @@ int Instance::getClusterIndex()
 {
     return clusterIndex;
 }
+
+void Instance::setVertex(ofVec3f _vertex)
+{
+    vertex = _vertex;
+}
+
+ofVec3f Instance::getVertex()
+{
+    return vertex;
+}
