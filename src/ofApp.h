@@ -20,6 +20,9 @@ struct ClusterGui
     ofxPanel gui;
     ofParameter<bool> drawImages;
     ofParameter<bool> drawPointCloud;
+    ofParameter<bool> drawMesh;
+    ofParameter<bool> showCubes;
+    ofParameter<bool> modelRendered;
     ofParameter<bool> save;
 };
 
@@ -33,6 +36,8 @@ class ofApp : public ofBaseApp{
     void initGui();
     void setupGui();
     void drawGui();
+    
+    void keyReleased(int key);
     
     void scan_dir_imgs(ofDirectory dir);
     
@@ -49,6 +54,7 @@ class ofApp : public ofBaseApp{
     ofColor colors[NUMCLUSTERS];
     
     ofxMarchingCubes marchingCubes;
+    ofVec3f initPos, gridSize;
     
     ofEasyCam cam;
     
@@ -76,5 +82,7 @@ class ofApp : public ofBaseApp{
     int w, h, d;
     float perplexity, theta;
     float scale;
+    
+    int limit;
 
 };

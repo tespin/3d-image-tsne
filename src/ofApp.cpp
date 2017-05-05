@@ -42,6 +42,12 @@ void ofApp::setup()
     ny = 8;
     nz = 8;
     
+    // still not sure about these numbers?
+    initPos = ofVec3f(0, 0, 0);
+    gridSize = ofVec3f(7500, 4000, 12000);
+    
+    marchingCubes.init(initPos, gridSize, nx, ny, nz);
+    
     w = 256;
     h = 256;
     d = 256;
@@ -136,6 +142,7 @@ void ofApp::setup()
     for (int i = 0; i < NUMCLUSTERS; i++)
     {
         ofMesh mesh;
+        mesh.setMode(OF_PRIMITIVE_POINTS);
         meshVector.push_back(mesh);
         
         colors[i] = ofColor(ofRandom(255), ofRandom(255), ofRandom(255)) ;
@@ -184,7 +191,41 @@ void ofApp::setup()
 
 void ofApp::update()
 {
-
+    for (int i = 0; i < instanceVector.size(); i++)
+    {
+        
+        for (int j = 0; j < NUMCLUSTERS; j++)
+        {
+            if (instanceVector[i].getClusterIndex() == j)
+            {
+                if (clustersGui[j].showCubes && !clustersGui[j].modelRendered)
+                {
+                    marchingCubes.resetIsoValues();
+                    auto vertices = meshVector[j].getVertices();
+                    
+                    for (int i = 0; i < meshVector[j].getNumVertices(); i++)
+                    {
+                        ofVec3f vertex = vertices.at(i);
+                        ofPoint p = ofPoint(vertex.x, vertex.y, vertex.z);
+                        marchingCubes.addMetaBall(p, 0.2);
+                    }
+                    
+                    marchingCubes.update(1.7, true);
+                    clustersGui[j].modelRendered = true;
+                    
+                }
+                
+                if (clustersGui[j].modelRendered && clustersGui[j].save)
+                {
+                    clustersGui[j].save = false;
+                    marchingCubes.saveModel(ofToDataPath("cluster_" + ofToString(j+1) + ".stl"));
+                    std::cout << "Saving cluster " << ofToString(j+1) << "!" << std::endl;
+                }
+                
+            }
+            
+        }
+    }
 }
 
 void ofApp::draw()
@@ -217,7 +258,17 @@ void ofApp::draw()
                     ofSetColor(colors[clusters[i]]);
                     sphere.setPosition(posVector[i].x + (images[i].getWidth() / 2) , posVector[i].y + (images[i].getHeight() / 2), posVector[i].z);
                     sphere.draw();
-                }   
+                }
+                
+                if (clustersGui[j].drawMesh)
+                {
+                    meshVector[j].draw();
+                }
+                
+                if (clustersGui[j].showCubes)
+                {
+                    marchingCubes.drawFilled();
+                }
             }
         }
     }
@@ -252,9 +303,12 @@ void ofApp::setupGui()
     for (int i = 0; i < NUMCLUSTERS; i++)
     {
         clustersGui[i].gui.setup();
-        clustersGui[i].gui.setPosition(0, clustersGui[i].gui.getHeight() * (i*4));
+        clustersGui[i].gui.setPosition(0, clustersGui[i].gui.getHeight() * (i*7));
         clustersGui[i].gui.add(clustersGui[i].drawImages.set("Draw Image Cluster: " + ofToString(i+1), true));
         clustersGui[i].gui.add(clustersGui[i].drawPointCloud.set("Draw Point Cloud Cluster: " + ofToString(i+1), true));
+        clustersGui[i].gui.add(clustersGui[i].drawMesh.set("Draw Mesh", false));
+        clustersGui[i].gui.add(clustersGui[i].showCubes.set("Show Cubes", false));
+        clustersGui[i].gui.add(clustersGui[i].modelRendered.set("Model Rendered", false));
         clustersGui[i].gui.add(clustersGui[i].save.set("Save", false));
     }
 }
@@ -264,5 +318,24 @@ void ofApp::drawGui()
     for (int i = 0; i < NUMCLUSTERS; i++)
     {
         clustersGui[i].gui.draw();
+    }
+}
+
+void ofApp::keyReleased(int key)
+{
+    for (int i = 0; i < instanceVector.size(); i++)
+    {
+        for (int j = 0; j < NUMCLUSTERS; j++)
+        {
+            if (instanceVector[i].getClusterIndex() == j)
+            {
+                if (key == 's')
+                {
+                    clustersGui[j].save = true;
+                }
+                
+            }
+            
+        }
     }
 }
