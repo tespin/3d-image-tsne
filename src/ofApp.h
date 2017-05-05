@@ -7,6 +7,7 @@
 #include "ofxLearn.h"
 #include "ofxGui.h"
 #include "ofxMarchingCubes.h"
+#include "Instance.h"
 
 //#define NUMIMAGES 1500
 //#define NUMCLUSTERS 11
@@ -59,8 +60,9 @@ class ofApp : public ofBaseApp{
     std::vector<std::vector<ofxCcv::Classification> > results;
     std::vector<std::vector<double> > tsneVecs;
     std::vector<ofVec3f> solvedGrid, gridPoints;
-    
     std::vector<ofVec3f> initial, grid;
+    
+    std::vector<Instance> instanceVector;
     
     ofSpherePrimitive sphere;
     

@@ -121,6 +121,21 @@ void ofApp::setup()
     clusterer.train();
     clusters = clusterer.getClusters();
     
+    for (int i = 0; i < clusters.size(); i++)
+    {
+        Instance instance;
+        instance.assignClusterIndex(clusters[i]);
+        
+        instanceVector.push_back(instance);
+        
+//        cout << "Instance " << ofToString(i) << " " << ofToString(instances[i]) << " assigned to cluster " << ofToString(clusters[i]) << endl;
+    }
+    
+    for (int i = 0; i < instanceVector.size(); i++)
+    {
+//        std::cout << "Instance " << ofToString(i) << "assigned to actual cluster " << ofToString(instanceVector[i].getClusterIndex()) << std::endl;
+    }
+    
     for (int i = 0; i < NUMCLUSTERS; i++)
     {
         colors[i] = ofColor(ofRandom(255), ofRandom(255), ofRandom(255)) ;
@@ -154,17 +169,21 @@ void ofApp::draw()
         
         for (int j = 0; j < NUMCLUSTERS; j++)
         {
-            if (clustersGui[j].drawImages)
-            {
-                ofSetColor(255, 255, 255);
-                images[i].draw(x, y, z, images[i].getWidth(), images[i].getHeight());
-            }
             
-            if (clustersGui[j].drawPointCloud)
+            if (instanceVector[i].getClusterIndex() == j)
             {
-                ofSetColor(colors[clusters[i]]);
-                sphere.setPosition(x + (images[i].getWidth() / 2) , y + (images[i].getHeight() / 2), z);
-                sphere.draw();
+                if (clustersGui[j].drawImages)
+                {
+                    ofSetColor(255, 255, 255);
+                    images[i].draw(x, y, z, images[i].getWidth(), images[i].getHeight());
+                }
+                
+                if (clustersGui[j].drawPointCloud)
+                {
+                    ofSetColor(colors[clusters[i]]);
+                    sphere.setPosition(x + (images[i].getWidth() / 2) , y + (images[i].getHeight() / 2), z);
+                    sphere.draw();
+                }   
             }
         }
     }
