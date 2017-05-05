@@ -173,10 +173,9 @@ void ofApp::setup()
             if (instanceVector[i].getClusterIndex() == j)
             {
                 meshVector[j].addVertex(instanceVector[i].getVertex());
-                
             }
-            
         }
+        
         // check cluster
         //        std::cout << "Instance " << ofToString(i) << "assigned to actual cluster " << ofToString(instanceVector[i].getClusterIndex()) << std::endl;
         
@@ -215,9 +214,8 @@ void ofApp::update()
                         ofVec3f vertex = vertices.at(k);
                         ofPoint p = ofPoint(vertex.x, vertex.y, vertex.z);
                         marchingCubes.addMetaBall(vertex, 0.2);
-//                        marchingCubes.addMetaBall(p, 0.8);
 //                        std::cout << p << std::endl;
-                        std::cout << "Vertex: " << ofToString(vertex) << "added!" << std::endl;
+                        std::cout << "Vertex: " << ofToString(vertex) << " added!" << std::endl;
                     }
 //                    std::cout << "Metaballs added!" << std::endl;
                     
@@ -228,6 +226,7 @@ void ofApp::update()
                 
                 if (clustersGui[j].modelRendered && clustersGui[j].save)
                 {
+                    meshVector[j].save(ofToDataPath("meshSave.ply"));
                     clustersGui[j].save = false;
                     marchingCubes.saveModel(ofToDataPath("cluster_" + ofToString(j+1) + ".stl"));
                     std::cout << "Saving cluster " << ofToString(j+1) << "!" << std::endl;
@@ -246,8 +245,9 @@ void ofApp::draw()
     ofEnableDepthTest();
     
     ofBackground(255);
-    centerSphere.draw();
-    gridSphere.draw();
+    
+//    centerSphere.draw();
+//    gridSphere.draw();
     
     float t = ofMap(cos(ofGetElapsedTimef()), -1, 1, 0, 1);
     
