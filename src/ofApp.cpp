@@ -207,10 +207,12 @@ void ofApp::update()
                     {
                         ofVec3f vertex = vertices.at(k);
                         ofPoint p = ofPoint(vertex.x, vertex.y, vertex.z);
-                        marchingCubes.addMetaBall(p, 0.2);
+                        marchingCubes.addMetaBall(vertex, 0.8);
+//                        marchingCubes.addMetaBall(p, 0.8);
 //                        std::cout << p << std::endl;
+                        std::cout << "Vertex: " << ofToString(vertex) << "added!" << std::endl;
                     }
-                    std::cout << "Metaballs added!" << std::endl;
+//                    std::cout << "Metaballs added!" << std::endl;
                     
                     marchingCubes.update(1.7, true);
                     clustersGui[j].modelRendered = true;
@@ -331,9 +333,12 @@ void ofApp::keyReleased(int key)
         {
             if (instanceVector[i].getClusterIndex() == j)
             {
-                if (key == 's')
+                if(clustersGui[j].modelRendered)
                 {
-                    clustersGui[j].save = true;
+                    if (key == 's')
+                    {
+                        clustersGui[j].save = true;
+                    }
                 }
                 
             }
