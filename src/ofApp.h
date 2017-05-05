@@ -7,7 +7,6 @@
 #include "ofxLearn.h"
 #include "ofxGui.h"
 #include "ofxMarchingCubes.h"
-#include "Instance.h"
 
 //#define NUMIMAGES 1500
 //#define NUMCLUSTERS 11
@@ -15,25 +14,12 @@
 #define NUMIMAGES 512
 #define NUMCLUSTERS 4
 
-//struct Instance
-//{
-//    ofImage image;
-//    int clusterIndex;
-//    ofVec3f vertex;
-//};
-
-struct Cluster
-{
-    
-};
-
 struct ClusterGui
 {
     ofxPanel gui;
     ofParameter<bool> drawImages;
     ofParameter<bool> drawPointCloud;
     ofParameter<bool> save;
-//    ofxButton saveButton;
 };
 
 class ofApp : public ofBaseApp{
@@ -43,70 +29,44 @@ class ofApp : public ofBaseApp{
 		void update();
 		void draw();
     
-        void initGui();
-        void setupGui();
-        void drawGui();
+    void initGui();
+    void setupGui();
+    void drawGui();
     
-        void keyReleased(int key);
+    void scan_dir_imgs(ofDirectory dir);
     
-        void scan_dir_imgs(ofDirectory dir);
+    std::vector<ClusterGui> clustersGui;
     
-        void saveButtonPressed();
+    ofxCcv ccv;
     
-//    void saveToSTL(int _clusters);
-    void passToCluster(int _clusterIndex);
+    ofxTSNE tsne;
+    std::vector<ofVec3f> tsnePoints;
     
-//        std::vector<Cluster> clusterVector;
-        std::vector<Instance> instanceVector;
-//    std::vector<Cluster> clusterVector;
-    std::vector<std::vector<Instance> > clusterVector;
-//        std::vector<ClusterStruct> imageClusters;
-        std::vector<ClusterGui> clustersGui;
-        
-        ofxCcv ccv;
-        
-        ofxTSNE tsne;
-        vector<ofVec3f> tsnePoints;
-        
-        ofxLearnKMeans clusterer;
-        vector<double> instances[NUMIMAGES];
-        vector<int> clusters;
-        ofColor colors[NUMCLUSTERS];
+    ofxLearnKMeans clusterer;
+    std::vector<double> instances[NUMIMAGES];
+    std::vector<int> clusters;
+    ofColor colors[NUMCLUSTERS];
     
-        ofxMarchingCubes marchingCubes;
-        ofMesh mesh;
+    ofxMarchingCubes marchingCubes;
     
-        ofEasyCam cam;
-        ofxAssignment solver;
-        
-        vector<ofFile> imageFiles;
-        vector<ofImage> images;
-        vector<vector<float>> encodings;
-        vector<vector<ofxCcv::Classification>> results;
-        vector<ofxCcv::Classification> classification;
-        vector<vector<double>> tsneVecs;
-        vector<ofVec3f> solvedGrid, gridPoints;
-        
-        vector<ofVec3f> initial, grid;
-        
-        ofSpherePrimitive sphere;
+    ofEasyCam cam;
     
-        float x, y, z;
+    ofxAssignment solver;
     
-        int nx, ny, nz;
-        int w, h, d;
-        float perplexity, theta;
-        float scale;
+    std::vector<ofFile> imageFiles;
+    std::vector<ofImage> images;
+    std::vector<std::vector<float> > encodings;
+    std::vector<std::vector<ofxCcv::Classification> > results;
+    std::vector<std::vector<double> > tsneVecs;
+    std::vector<ofVec3f> solvedGrid, gridPoints;
     
-        int limit;
-        int clusterIndex;
+    std::vector<ofVec3f> initial, grid;
     
-        int buttonPress;
+    ofSpherePrimitive sphere;
     
-        bool runManually;
-    
-        bool showCubes;
-        bool modelRendered;
-        bool saveModel;
-		
+    int nx, ny, nz;
+    int w, h, d;
+    float perplexity, theta;
+    float scale;
+
 };

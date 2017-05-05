@@ -1,8 +1,5 @@
 #include "ofApp.h"
 
-// how to define clusters?
-// how to check for points inside a shape
-
 const string allowed_ext[] = {"jpg", "png", "gif", "jpeg"};
 
 void ofApp::scan_dir_imgs(ofDirectory dir)
@@ -31,32 +28,26 @@ void ofApp::scan_dir_imgs(ofDirectory dir)
 
 void ofApp::setup()
 {
-    
     string imageDir = "/Users/tespin/Documents/openFrameworks/apps/myApps/00_BatchFeatureEncoder/bin/data/image-set-a-scanner-darkly-2";
     
     string imageSavePath = "test-3d-tsne-scanner-darkly.png";
     
     // development
-//    nx = 15;
-//    ny = 10;
-//    nz = 10;
-    
-    ofVec3f initPos(0, 0, 0);
-    ofVec3f gridSize(7500, 4000, 12000);
+    //    nx = 15;
+    //    ny = 10;
+    //    nz = 10;
     
     // test
     nx = 8;
     ny = 8;
     nz = 8;
     
-    marchingCubes.init(initPos, gridSize, nx, ny, nz);
-    
     w = 256;
     h = 256;
     d = 256;
     
     perplexity = 50;
-    theta = 0.3;
+    theta = 0.4;
     
     scale = 2;
     
@@ -75,7 +66,7 @@ void ofApp::setup()
         ofExit(); // not enough images!
     }
     
-    // load all images
+    // load images
     for (int i = 0; i < nx * ny * nz; i++)
     {
         if (i % 20 == 0) ofLog() << " - loading image " << i << " / " << nx * ny * nz << " (" << dir.size() << " in dir)";
@@ -105,12 +96,12 @@ void ofApp::setup()
     for (int i = 0; i < images.size(); i++)
     {
         if (i % 20 == 0) ofLog() << " - encoding image " << i << " / " << images.size();
-        vector<float> encoding = ccv.encode(images[i], ccv.numLayers()-1);
+        std::vector<float> encoding = ccv.encode(images[i], ccv.numLayers()-1);
         encodings.push_back(encoding);
     }
     
-    // run t-SNE and load image points to imagePoints
-    ofLog() << "Run t-SNE on images";
+    // run t-SNE and loage image points to imagePoints
+    ofLog() << "Run t-SNE on images...";
     tsneVecs = tsne.run(encodings, 3, perplexity, theta, true);
     
     // solve 3D assignment grid
@@ -118,9 +109,6 @@ void ofApp::setup()
     gridPoints = makeGrid(nx, ny, nz);
     solvedGrid = solver.match(tsnePoints, gridPoints, false);
     
-    sphere.setRadius(50);
-    
-    mesh.setMode(OF_PRIMITIVE_POINTS);
     for (int i = 0; i < NUMIMAGES; i++)
     {
         instances[i].push_back(tsneVecs[i][0]);
@@ -133,111 +121,27 @@ void ofApp::setup()
     clusterer.train();
     clusters = clusterer.getClusters();
     
-    for (int i = 0; i < clusters.size(); i++)
-    {
-        Instance instance;
-        instance.setClusterIndex(clusters[i]);
-        
-        for (int j = 0; j < images.size(); j++)
-        {
-            instance.setClusterImage(images[j]);
-//            instance.setVertex(ofVec3f(tsneVecs[i][0], tsneVecs[i][1], tsneVecs[i][2]));
-        }
-        
-        instanceVector.push_back(instance);
-//        cout << "Instance " << ofToString(i) << " " << ofToString(instances[i]) << " assigned to cluster " << ofToString(clusters[i]) << endl;
-        
-    }
-    
     for (int i = 0; i < NUMCLUSTERS; i++)
     {
-        std::vector<Instance> cluster;
-        clusterVector.push_back(cluster);
-        
-        for (int j = 0; j < instanceVector.size(); j++)
-        {
-            if (instanceVector[j].clusterIndex == i)
-            {
-                clusterVector[i].push_back(instanceVector[j]);
-                // for individual vector cluster[i] in clusterVector, push back instance [j]
-                // where each individual vector cluster[i] is a vector of instances
-                // push into proper cluster in vector of clusters
-            }
-        }
-        
-        colors[i] = ofColor( ofRandom(255), ofRandom(255), ofRandom(255) );
+        colors[i] = ofColor(ofRandom(255), ofRandom(255), ofRandom(255)) ;
     }
-    
-    
-    // find cluster -> iterate through vertices -> check for verts inside mesh -> save out as obj
-    // save points?
-    
-    showCubes = false;
-    modelRendered = false;
-    saveModel = false;
-    
+                            
     initGui();
     setupGui();
     
-//    for (int i = 0; i < clusterVector.size(); i++)
-//    {
-//        for (int j = 0; j < images.size(); j++)
-//        {
-//            if (clusterVector[i][j].getClusterIndex() == 2)
-//            {
-//                std::cout << "Instance " << ofToString(j) << ": " << clusterVector[i][j].getVertex() << std::endl;
-//            }
-//            
-//        }
-//    }
-    
+    sphere.setRadius(50);
 }
 
 void ofApp::update()
 {
-    for (int i = 0; i < clusterVector.size(); i++)
-    {
-        for (int j = 0; j < solvedGrid.size(); j++)
-        {
-//            if (clusterVector[i][j].getClusterIndex() == 2)
-//            {
-//                std::cout << "Instance " << ofToString(j) << ": " << clusterVector[i][j].getVertex() << std::endl;
-//            }
-            float xPos = scale * (nx - 1) * w * solvedGrid[j].x;
-            float yPos = scale * (ny - 1) * h * solvedGrid[j].y;
-            float zPos = scale * (nz - 1) * d * solvedGrid[j].z;
-            
-            ofVec3f pos(xPos, yPos, zPos);
-            
-            clusterVector[i][j].setVertex(pos);
-            
-        std::cout << "Instance " << ofToString(j) << ": " << clusterVector[i][j].getVertex() << std::endl;
 
-        }
-    }
-    
-//    for (int i = 0; i < solvedGrid.size(); i++)
-//    {
-//        for (int j = 0; j < clusterVector.size(); j++)
-//        {
-//            float xPos = scale * (nx - 1) * w * solvedGrid[i].x;
-//            float yPos = scale * (ny - 1) * h * solvedGrid[i].y;
-//            float zPos = scale * (nz - 1) * d * solvedGrid[i].z;
-//            
-//            ofVec3f pos(xPos, yPos, zPos);
-//            
-//            clusterVector[i][j].setVertex(pos);
-//            
-//            std::cout << "Instance " << ofToString(j) << ": " << clusterVector[i][j].getVertex() << std::endl;
-//        }
-//    }
 }
 
 void ofApp::draw()
 {
     cam.begin();
     ofEnableDepthTest();
-
+    
     ofBackground(0);
     
     float t = ofMap(cos(ofGetElapsedTimef()), -1, 1, 0, 1);
@@ -248,38 +152,26 @@ void ofApp::draw()
         float y = scale * (ny - 1) * h * solvedGrid[i].y;
         float z = scale * (nz - 1) * d * solvedGrid[i].z;
         
-//        ofVec3f vert(x + (clusterVector[i].image.getWidth() / 2) , y + (clusterVector[i].image.getHeight() / 2), z);
-//        clusterVector[i].setVertex(vert);
-        
         for (int j = 0; j < NUMCLUSTERS; j++)
         {
-            
-//            if (clusterVector[i].getClusterIndex() == j)
-//            {
-            if (instanceVector[i].getClusterIndex() == j)
+            if (clustersGui[j].drawImages)
             {
-                
-                if (clustersGui[j].drawImages)
-                {
-                    ofSetColor(255, 255, 255);
-                    images[i].draw(x, y, z, images[i].getWidth(), images[i].getHeight());
-                }
-                
-                if (clustersGui[j].drawPointCloud)
-                {
-                    ofSetColor(colors[clusters[i]]);
-                    sphere.setPosition(x + (instanceVector[i].image.getWidth() / 2) , y + (instanceVector[i].image.getHeight() / 2), z);
-                    sphere.draw();
-                }
+                ofSetColor(255, 255, 255);
+                images[i].draw(x, y, z, images[i].getWidth(), images[i].getHeight());
+            }
+            
+            if (clustersGui[j].drawPointCloud)
+            {
+                ofSetColor(colors[clusters[i]]);
+                sphere.setPosition(x + (images[i].getWidth() / 2) , y + (images[i].getHeight() / 2), z);
+                sphere.draw();
             }
         }
-        
     }
     
     cam.end();
     ofDisableDepthTest();
     drawGui();
-    
 }
 
 void ofApp::initGui()
@@ -291,17 +183,12 @@ void ofApp::initGui()
         ofxPanel _gui;
         ofParameter<bool> _drawImages;
         ofParameter<bool> _drawPointCloud;
-//        ofxButton _button;
         ofParameter<bool> _save;
         
         clusterGui.gui = _gui;
         clusterGui.drawImages = _drawImages;
         clusterGui.drawPointCloud = _drawPointCloud;
-//        clusterGui.saveButton = _button;
         clusterGui.save = _save;
-        
-//        clusterGui.saveButton.addListener(ofEvents().mousePressed, this, &ofApp::saveButtonPressed);
-//        if (i < 1) clusterGui.saveButton.addListener(ofEvents.mouseReleased ,this, &ofApp::saveButtonPressed);
         
         clustersGui.push_back(clusterGui);
     }
@@ -325,38 +212,4 @@ void ofApp::drawGui()
     {
         clustersGui[i].gui.draw();
     }
-}
-
-void ofApp::keyReleased(int key)
-{
-    if (key == ' ')
-    {
-        if (saveModel)
-        {
-            marchingCubes.saveModel(ofToDataPath("cluster_" + ofToString(clusterIndex) + ".stl"));
-        }
-    }
-}
-
-//void ofApp::keyReleased(int key)
-//{
-//    saveToSTL(clusterIndex);
-//}
-//
-void ofApp::passToCluster(int _clusterIndex)
-{
-    clusterIndex = _clusterIndex;
-}
-//
-//void ofApp::saveToSTL(int _cluster)
-//{
-//    marchingCubes.saveModel(ofToDataPath("cluster_" + ofToString(_cluster) + ".stl"));
-//    std::cout << "Saving cluster " << ofToString(_cluster+1) << "!" << std::endl;
-//}
-
-void ofApp::saveButtonPressed()
-{
-    // save
-    buttonPress++;
-    std::cout << "Button pressed " << buttonPress << " times!" << endl;
 }
