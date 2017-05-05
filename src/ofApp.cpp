@@ -140,7 +140,17 @@ void ofApp::setup()
     {
         colors[i] = ofColor(ofRandom(255), ofRandom(255), ofRandom(255)) ;
     }
-                            
+    
+    for (int i = 0; i < solvedGrid.size(); i++)
+    {
+        float x = scale * (nx - 1) * w * solvedGrid[i].x;
+        float y = scale * (ny - 1) * h * solvedGrid[i].y;
+        float z = scale * (nz - 1) * d * solvedGrid[i].z;
+        
+        ofVec3f pos(x, y, z);
+        posVector.push_back(pos);
+    }
+    
     initGui();
     setupGui();
     
@@ -163,25 +173,24 @@ void ofApp::draw()
     
     for (int i = 0; i < solvedGrid.size(); i++)
     {
-        float x = scale * (nx - 1) * w * solvedGrid[i].x;
-        float y = scale * (ny - 1) * h * solvedGrid[i].y;
-        float z = scale * (nz - 1) * d * solvedGrid[i].z;
+//        float x = scale * (nx - 1) * w * solvedGrid[i].x;
+//        float y = scale * (ny - 1) * h * solvedGrid[i].y;
+//        float z = scale * (nz - 1) * d * solvedGrid[i].z;
         
         for (int j = 0; j < NUMCLUSTERS; j++)
         {
-            
             if (instanceVector[i].getClusterIndex() == j)
             {
                 if (clustersGui[j].drawImages)
                 {
                     ofSetColor(255, 255, 255);
-                    images[i].draw(x, y, z, images[i].getWidth(), images[i].getHeight());
+                    images[i].draw(posVector[i], images[i].getWidth(), images[i].getHeight());
                 }
                 
                 if (clustersGui[j].drawPointCloud)
                 {
                     ofSetColor(colors[clusters[i]]);
-                    sphere.setPosition(x + (images[i].getWidth() / 2) , y + (images[i].getHeight() / 2), z);
+                    sphere.setPosition(posVector[i].x + (images[i].getWidth() / 2) , posVector[i].y + (images[i].getHeight() / 2), posVector[i].z);
                     sphere.draw();
                 }   
             }

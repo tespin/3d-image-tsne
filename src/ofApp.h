@@ -64,7 +64,11 @@ class ofApp : public ofBaseApp{
     
     std::vector<Instance> instanceVector;
     
+    std::vector<ofVec3f> posVector;
+    
     ofSpherePrimitive sphere;
+    
+    float xPos, yPos, zPos;
     
     int nx, ny, nz;
     int w, h, d;
