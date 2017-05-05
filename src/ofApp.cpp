@@ -51,6 +51,8 @@ void ofApp::setup()
     
     scale = 2;
     
+    sphere.setRadius(50);
+    
     cam.setNearClip(0.1);
     cam.setFarClip(50000);
     
@@ -133,6 +135,9 @@ void ofApp::setup()
     
     for (int i = 0; i < NUMCLUSTERS; i++)
     {
+        ofMesh mesh;
+        meshVector.push_back(mesh);
+        
         colors[i] = ofColor(ofRandom(255), ofRandom(255), ofRandom(255)) ;
     }
     
@@ -150,6 +155,15 @@ void ofApp::setup()
     {
         instanceVector[i].setVertex(posVector[i]);
         
+        for (int j = 0; j < NUMCLUSTERS; j++)
+        {
+            if (instanceVector[i].getClusterIndex() == j)
+            {
+                meshVector[j].addVertex(instanceVector[i].getVertex());
+                
+            }
+            
+        }
         // check cluster
         //        std::cout << "Instance " << ofToString(i) << "assigned to actual cluster " << ofToString(instanceVector[i].getClusterIndex()) << std::endl;
         
@@ -157,10 +171,15 @@ void ofApp::setup()
 //        std::cout << "Instance: " << ofToString(i) << ", Vertex: " << ofToString(instanceVector[i].getVertex()) << std::endl;
     }
     
+    // check mesh
+//    for (int i = 0; i < meshVector.size(); i++)
+//    {
+//        std::cout << "Mesh: " << ofToString(i) << ", Verts: " << ofToString(meshVector[i].getVertices());
+//    }
+    
     initGui();
     setupGui();
     
-    sphere.setRadius(50);
 }
 
 void ofApp::update()

@@ -66,6 +66,8 @@ class ofApp : public ofBaseApp{
     
     std::vector<ofVec3f> posVector;
     
+    std::vector<ofMesh> meshVector;
+    
     ofSpherePrimitive sphere;
     
     float xPos, yPos, zPos;
