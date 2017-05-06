@@ -45,8 +45,8 @@ void ofApp::setup()
     nz = 8;
     
     // still not sure about these numbers?
-    initPos = ofVec3f(1850, 1850, 2100);
-    gridSize = ofVec3f(10000, 10000, 10000);
+    initPos = ofPoint(1850, 1850, 2100);
+    gridSize = ofPoint(10000, 10000, 10000);
     
     centerSphere.setPosition(initPos);
     gridSphere.setPosition(gridSize);
@@ -54,7 +54,7 @@ void ofApp::setup()
     centerSphere.setRadius(75);
     gridSphere.setRadius(75);
     
-    marchingCubes.init(initPos, gridSize, nx, ny, nz);
+    marchingCubes.init(initPos, gridSize, 50, 50, 50);
     
     w = 256;
     h = 256;
@@ -185,7 +185,7 @@ void ofApp::setup()
         //        std::cout << "Instance " << ofToString(i) << "assigned to actual cluster " << ofToString(instanceVector[i].getClusterIndex()) << std::endl;
         
         // check vertices
-//        std::cout << "Instance: " << ofToString(i) << ", Vertex: " << ofToString(instanceVector[i].getVertex()) << std::endl;
+        std::cout << "Cluster:" << instanceVector[i].getClusterIndex() << ", Instance: " << ofToString(i) << ", Vertex: " << ofToString(instanceVector[i].getVertex()) << std::endl;
     }
     
     // check mesh
@@ -218,14 +218,17 @@ void ofApp::update()
                     {
                         ofVec3f vertex = vertices.at(k);
                         ofPoint p = ofPoint(vertex.x, vertex.y, vertex.z);
-                        marchingCubes.addMetaBall(vertex, 1.5);
+                        marchingCubes.addMetaBall(p, 0.2);
 //                        std::cout << p << std::endl;
-//                        std::cout << "Vertex: " << ofToString(vertex) << " added!" << std::endl;
+                        std::cout << "Vertex: " << ofToString(vertex) << " added!" << std::endl;
+                        
                     }
 //                    std::cout << "Metaballs added!" << std::endl;
                     
-                    marchingCubes.update(0.5, true);
+                    marchingCubes.update(1.7, true);
                     clustersGui[j].modelRendered = true;
+                    std::cout << "Marching cubes verts: " << ofToString(marchingCubes.getVertices()) << std::endl;
+                    
                     
                 }
                 
@@ -235,7 +238,7 @@ void ofApp::update()
                     meshVector[j].save(ofToDataPath("meshSave.ply"));
                     clustersGui[j].save = false;
                     marchingCubes.saveModel(ofToDataPath("cluster_" + ofToString(j+1) + ".stl"));
-                    std::cout << "Saving cluster " << ofToString(j+1) << "!" << std::endl;
+//                    std::cout << "Saving cluster " << ofToString(j+1) << "!" << std::endl;
                 }
                 
             }
@@ -247,10 +250,10 @@ void ofApp::update()
 
 void ofApp::draw()
 {
+    ofBackground(255);
     cam.begin();
     ofEnableDepthTest();
     
-    ofBackground(255);
     
 //    centerSphere.draw();
 //    gridSphere.draw();

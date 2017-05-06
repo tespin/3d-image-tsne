@@ -54,7 +54,8 @@ class ofApp : public ofBaseApp{
     ofColor colors[NUMCLUSTERS];
     
     ofxMarchingCubes marchingCubes;
-    ofVec3f initPos, gridSize;
+    
+    ofPoint initPos, gridSize;
     
     ofEasyCam cam;
     
