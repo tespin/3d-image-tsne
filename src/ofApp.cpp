@@ -28,6 +28,8 @@ void ofApp::scan_dir_imgs(ofDirectory dir)
 
 void ofApp::setup()
 {
+    ofSetVerticalSync(true);
+    
     string imageDir = "/Users/tespin/Documents/openFrameworks/apps/myApps/00_BatchFeatureEncoder/bin/data/image-set-a-scanner-darkly-2";
     
     string imageSavePath = "test-3d-tsne-scanner-darkly.png";
@@ -44,7 +46,7 @@ void ofApp::setup()
     
     // still not sure about these numbers?
     initPos = ofVec3f(1850, 1850, 2100);
-    gridSize = ofVec3f(7000, 7000, 7000);
+    gridSize = ofVec3f(10000, 10000, 10000);
     
     centerSphere.setPosition(initPos);
     gridSphere.setPosition(gridSize);
@@ -145,6 +147,7 @@ void ofApp::setup()
 //        cout << "Instance " << ofToString(i) << " " << ofToString(instances[i]) << " assigned to cluster " << ofToString(clusters[i]) << endl;
     }
     
+    // populate vector of meshes
     for (int i = 0; i < NUMCLUSTERS; i++)
     {
         ofMesh mesh;
@@ -154,6 +157,7 @@ void ofApp::setup()
         colors[i] = ofColor(ofRandom(255), ofRandom(255), ofRandom(255)) ;
     }
     
+    // populate vector of verts
     for (int i = 0; i < solvedGrid.size(); i++)
     {
         float x = scale * (nx - 1) * w * solvedGrid[i].x;
@@ -164,6 +168,7 @@ void ofApp::setup()
         posVector.push_back(pos);
     }
     
+    // populate meshes with verts
     for (int i = 0; i < instanceVector.size(); i++)
     {
         instanceVector[i].setVertex(posVector[i]);
@@ -213,19 +218,20 @@ void ofApp::update()
                     {
                         ofVec3f vertex = vertices.at(k);
                         ofPoint p = ofPoint(vertex.x, vertex.y, vertex.z);
-                        marchingCubes.addMetaBall(vertex, 0.2);
+                        marchingCubes.addMetaBall(vertex, 1.5);
 //                        std::cout << p << std::endl;
-                        std::cout << "Vertex: " << ofToString(vertex) << " added!" << std::endl;
+//                        std::cout << "Vertex: " << ofToString(vertex) << " added!" << std::endl;
                     }
 //                    std::cout << "Metaballs added!" << std::endl;
                     
-                    marchingCubes.update(1.7, true);
+                    marchingCubes.update(0.5, true);
                     clustersGui[j].modelRendered = true;
                     
                 }
                 
                 if (clustersGui[j].modelRendered && clustersGui[j].save)
                 {
+                    
                     meshVector[j].save(ofToDataPath("meshSave.ply"));
                     clustersGui[j].save = false;
                     marchingCubes.saveModel(ofToDataPath("cluster_" + ofToString(j+1) + ".stl"));
