@@ -226,7 +226,7 @@ void ofApp::update()
 //                    std::cout << "Metaballs added!" << std::endl;
                     
                     std::cout << "Before update: " << ofToString(marchingCubes.getVertices()) << std::endl;
-                    marchingCubes.update(0.003, true);
+                    marchingCubes.update(0.0035, true);
                     std::cout << "After update: " << ofToString(marchingCubes.getVertices()) << std::endl;
                     clustersGui[j].modelRendered = true;
 //                    marchingCubes.update(1.7, true);
