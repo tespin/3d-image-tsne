@@ -54,7 +54,7 @@ void ofApp::setup()
     centerSphere.setRadius(75);
     gridSphere.setRadius(75);
     
-    marchingCubes.init(initPos, gridSize, 50, 50, 50);
+    marchingCubes.init(initPos, gridSize, nx, ny, nz);
     
     w = 256;
     h = 256;
@@ -225,9 +225,13 @@ void ofApp::update()
                     }
 //                    std::cout << "Metaballs added!" << std::endl;
                     
-                    marchingCubes.update(1.7, true);
+                    std::cout << "Before update: " << ofToString(marchingCubes.getVertices()) << std::endl;
+                    marchingCubes.update(0.4, true);
+                    std::cout << "After update: " << ofToString(marchingCubes.getVertices()) << std::endl;
                     clustersGui[j].modelRendered = true;
-                    std::cout << "Marching cubes verts: " << ofToString(marchingCubes.getVertices()) << std::endl;
+//                    marchingCubes.update(1.7, true);
+//                    clustersGui[j].modelRendered = true;
+//                    std::cout << "Marching cubes verts: " << ofToString(marchingCubes.getVertices()) << std::endl;
                     
                     
                 }
@@ -238,20 +242,21 @@ void ofApp::update()
                     meshVector[j].save(ofToDataPath("meshSave.ply"));
                     clustersGui[j].save = false;
                     marchingCubes.saveModel(ofToDataPath("cluster_" + ofToString(j+1) + ".stl"));
-//                    std::cout << "Saving cluster " << ofToString(j+1) << "!" << std::endl;
+                    std::cout << "Saving cluster " << ofToString(j+1) << "!" << std::endl;
                 }
                 
             }
             
         }
     }
+//    std::cout << "Marching cubes verts: " << ofToString(marchingCubes.getVertices()) << std::endl;
 //    std::cout << cam.getPosition() << std::endl;
 }
 
 void ofApp::draw()
 {
-    ofBackground(255);
     cam.begin();
+    ofBackground(255);
     ofEnableDepthTest();
     
     
