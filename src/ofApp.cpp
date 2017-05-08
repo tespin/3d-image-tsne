@@ -194,7 +194,6 @@ void ofApp::setup()
     
     initGui();
     setupGui();
-    
 }
 
 void ofApp::update()
@@ -226,7 +225,7 @@ void ofApp::update()
                     
                     std::cout << "Before update: " << ofToString(marchingCubes.getVertices()) << std::endl;
                     
-                    // update adds the meshes's verts to apply the algorithm on
+                    // update adds the meshes's verts and apply marching cubes
                     marchingCubes.update(0.0035, true);
                     
                     std::cout << "After update: " << ofToString(marchingCubes.getVertices()) << std::endl;
@@ -242,10 +241,8 @@ void ofApp::update()
                     clustersGui[j].save = false;
                     marchingCubes.saveModel(ofToDataPath("cluster_" + ofToString(j+1) + ".stl"));
                     std::cout << "Saving cluster " << ofToString(j+1) << "!" << std::endl;
-                }
-                
+                }   
             }
-            
         }
     }
     // std::cout << "Marching cubes verts: " << ofToString(marchingCubes.getVertices()) << std::endl;
@@ -254,8 +251,8 @@ void ofApp::update()
 
 void ofApp::draw()
 {
-    cam.begin();
     ofBackground(255);
+    cam.begin();
     ofEnableDepthTest();
     
     for (int i = 0; i < solvedGrid.size(); i++)
@@ -292,12 +289,15 @@ void ofApp::draw()
                     ofSetColor(colors[clusters[i]]);
                     marchingCubes.drawFilled();
                 }
+                else
+                {
+                    clustersGui[j].modelRendered = false;
+                }
             }
         }
     }
-    
-    cam.end();
     ofDisableDepthTest();
+    cam.end();
     drawGui();
 }
 
@@ -328,6 +328,7 @@ void ofApp::setupGui()
     for (int i = 0; i < NUMCLUSTERS; i++)
     {
         clustersGui[i].gui.setup();
+        clustersGui[i].gui.setName("Cluster: " + ofToString(i+1));
         clustersGui[i].gui.setPosition(0, clustersGui[i].gui.getHeight() * (i*7));
         clustersGui[i].gui.add(clustersGui[i].drawImages.set("Draw Image Cluster: " + ofToString(i+1), true));
         clustersGui[i].gui.add(clustersGui[i].drawPointCloud.set("Draw Point Cloud Cluster: " + ofToString(i+1), true));
