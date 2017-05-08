@@ -48,13 +48,7 @@ void ofApp::setup()
     initPos = ofPoint(1850, 1850, 2100);
     gridSize = ofPoint(10000, 10000, 10000);
     
-    centerSphere.setPosition(initPos);
-    gridSphere.setPosition(gridSize);
-    
-    centerSphere.setRadius(75);
-    gridSphere.setRadius(75);
-    
-    marchingCubes.init(initPos, gridSize, nx, ny, nz);
+    marchingCubes.init(initPos, gridSize, 15, 15, 15);
     
     w = 256;
     h = 256;
@@ -76,6 +70,7 @@ void ofApp::setup()
     scan_dir_imgs(dir);
     std::cout << imageFiles.size() << endl;
     
+    // check that there are enough images in directory
     if (imageFiles.size() < nx * ny * nz)
     {
         ofLog(OF_LOG_ERROR, "There are less images in the directory than the grid size requested (nx*ny*nz="+ofToString((nx*ny*nz))+"). Exiting to save you trouble...");
@@ -125,6 +120,7 @@ void ofApp::setup()
     gridPoints = makeGrid(nx, ny, nz);
     solvedGrid = solver.match(tsnePoints, gridPoints, false);
     
+    // add raw t-SNE data to k-means clusterer
     for (int i = 0; i < NUMIMAGES; i++)
     {
         instances[i].push_back(tsneVecs[i][0]);
@@ -133,10 +129,12 @@ void ofApp::setup()
         clusterer.addSample(instances[i]);
     }
     
+    // set up clustering and train
     clusterer.setNumClusters(NUMCLUSTERS);
     clusterer.train();
     clusters = clusterer.getClusters();
     
+    // assign each instance to a cluster
     for (int i = 0; i < clusters.size(); i++)
     {
         Instance instance;
@@ -144,7 +142,7 @@ void ofApp::setup()
         
         instanceVector.push_back(instance);
         
-//        cout << "Instance " << ofToString(i) << " " << ofToString(instances[i]) << " assigned to cluster " << ofToString(clusters[i]) << endl;
+    //    cout << "Instance " << ofToString(i) << " " << ofToString(instances[i]) << " assigned to cluster " << ofToString(clusters[i]) << endl;
     }
     
     // populate vector of meshes
@@ -182,17 +180,17 @@ void ofApp::setup()
         }
         
         // check cluster
-        //        std::cout << "Instance " << ofToString(i) << "assigned to actual cluster " << ofToString(instanceVector[i].getClusterIndex()) << std::endl;
+        // std::cout << "Instance " << ofToString(i) << "assigned to actual cluster " << ofToString(instanceVector[i].getClusterIndex()) << std::endl;
         
         // check vertices
         std::cout << "Cluster:" << instanceVector[i].getClusterIndex() << ", Instance: " << ofToString(i) << ", Vertex: " << ofToString(instanceVector[i].getVertex()) << std::endl;
     }
     
     // check mesh
-//    for (int i = 0; i < meshVector.size(); i++)
-//    {
-//        std::cout << "Mesh: " << ofToString(i) << ", Verts: " << ofToString(meshVector[i].getVertices());
-//    }
+    // for (int i = 0; i < meshVector.size(); i++)
+    // {
+    //    std::cout << "Mesh: " << ofToString(i) << ", Verts: " << ofToString(meshVector[i].getVertices());
+    // }
     
     initGui();
     setupGui();
@@ -201,44 +199,45 @@ void ofApp::setup()
 
 void ofApp::update()
 {
-    
+    // cycle through each gui
     for (int i = 0; i < instanceVector.size(); i++)
     {
-        
         for (int j = 0; j < NUMCLUSTERS; j++)
         {
+            // for each selected cluster
             if (instanceVector[i].getClusterIndex() == j)
             {
+                // if selected cluster is show cubes and model hasn't been rendered
                 if (clustersGui[j].showCubes && !clustersGui[j].modelRendered)
                 {
                     marchingCubes.resetIsoValues();
                     auto vertices = meshVector[j].getVertices();
                     
+                    // add meta ball at vertices of selected mesh
                     for (int k = 0; k < meshVector[j].getNumVertices(); k++)
                     {
                         ofVec3f vertex = vertices.at(k);
                         ofPoint p = ofPoint(vertex.x, vertex.y, vertex.z);
-                        marchingCubes.addMetaBall(p, 0.2);
-//                        std::cout << p << std::endl;
-                        std::cout << "Vertex: " << ofToString(vertex) << " added!" << std::endl;
+                        marchingCubes.addMetaBall(p, 0.05);
+                        // std::cout << "Vertex: " << ofToString(vertex) << " added!" << std::endl;
                         
                     }
-//                    std::cout << "Metaballs added!" << std::endl;
+                    // std::cout << "Metaballs added!" << std::endl;
                     
                     std::cout << "Before update: " << ofToString(marchingCubes.getVertices()) << std::endl;
+                    
+                    // update adds the meshes's verts to apply the algorithm on
                     marchingCubes.update(0.0035, true);
+                    
                     std::cout << "After update: " << ofToString(marchingCubes.getVertices()) << std::endl;
                     clustersGui[j].modelRendered = true;
-//                    marchingCubes.update(1.7, true);
-//                    clustersGui[j].modelRendered = true;
-//                    std::cout << "Marching cubes verts: " << ofToString(marchingCubes.getVertices()) << std::endl;
                     
                     
                 }
                 
+                // if selected model is rendered and save is true
                 if (clustersGui[j].modelRendered && clustersGui[j].save)
                 {
-                    
                     meshVector[j].save(ofToDataPath("meshSave.ply"));
                     clustersGui[j].save = false;
                     marchingCubes.saveModel(ofToDataPath("cluster_" + ofToString(j+1) + ".stl"));
@@ -249,8 +248,8 @@ void ofApp::update()
             
         }
     }
-//    std::cout << "Marching cubes verts: " << ofToString(marchingCubes.getVertices()) << std::endl;
-//    std::cout << cam.getPosition() << std::endl;
+    // std::cout << "Marching cubes verts: " << ofToString(marchingCubes.getVertices()) << std::endl;
+    // std::cout << cam.getPosition() << std::endl;
 }
 
 void ofApp::draw()
@@ -259,28 +258,20 @@ void ofApp::draw()
     ofBackground(255);
     ofEnableDepthTest();
     
-    
-//    centerSphere.draw();
-//    gridSphere.draw();
-    
-    float t = ofMap(cos(ofGetElapsedTimef()), -1, 1, 0, 1);
-    
     for (int i = 0; i < solvedGrid.size(); i++)
     {
-//        float x = scale * (nx - 1) * w * solvedGrid[i].x;
-//        float y = scale * (ny - 1) * h * solvedGrid[i].y;
-//        float z = scale * (nz - 1) * d * solvedGrid[i].z;
-        
         for (int j = 0; j < NUMCLUSTERS; j++)
         {
             if (instanceVector[i].getClusterIndex() == j)
             {
+                // if selected cluster's draw images parameter is true
                 if (clustersGui[j].drawImages)
                 {
                     ofSetColor(255, 255, 255);
                     images[i].draw(posVector[i], images[i].getWidth(), images[i].getHeight());
                 }
                 
+                // if selected cluster's draw point cloud parameter is true
                 if (clustersGui[j].drawPointCloud)
                 {
                     ofSetColor(colors[clusters[i]]);
@@ -288,13 +279,17 @@ void ofApp::draw()
                     sphere.draw();
                 }
                 
+                // if selected cluster's draw mesh parameter is true
                 if (clustersGui[j].drawMesh)
                 {
+                    ofSetColor(colors[clusters[i]]);
                     meshVector[j].draw();
                 }
                 
+                // if selected cluster's show cubes parameter is true
                 if (clustersGui[j].showCubes)
                 {
+                    ofSetColor(colors[clusters[i]]);
                     marchingCubes.drawFilled();
                 }
             }
@@ -308,6 +303,7 @@ void ofApp::draw()
 
 void ofApp::initGui()
 {
+    // for every cluster, create a gui and push it back to vector of guis
     for (int i = 0; i < NUMCLUSTERS; i++)
     {
         ClusterGui clusterGui;
@@ -328,6 +324,7 @@ void ofApp::initGui()
 
 void ofApp::setupGui()
 {
+    // set up every gui
     for (int i = 0; i < NUMCLUSTERS; i++)
     {
         clustersGui[i].gui.setup();
@@ -343,6 +340,7 @@ void ofApp::setupGui()
 
 void ofApp::drawGui()
 {
+    // draw each gui
     for (int i = 0; i < NUMCLUSTERS; i++)
     {
         clustersGui[i].gui.draw();
@@ -351,6 +349,7 @@ void ofApp::drawGui()
 
 void ofApp::keyReleased(int key)
 {
+    // for selected gui, if 's' key is pressed, save parameter is true
     for (int i = 0; i < instanceVector.size(); i++)
     {
         for (int j = 0; j < NUMCLUSTERS; j++)
@@ -364,9 +363,7 @@ void ofApp::keyReleased(int key)
                         clustersGui[j].save = true;
                     }
                 }
-                
             }
-            
         }
     }
 }

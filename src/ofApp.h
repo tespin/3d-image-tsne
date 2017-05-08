@@ -76,8 +76,6 @@ class ofApp : public ofBaseApp{
     std::vector<ofMesh> meshVector;
     
     ofSpherePrimitive sphere;
-    ofSpherePrimitive centerSphere;
-    ofSpherePrimitive gridSphere;
     
     float xPos, yPos, zPos;
     
