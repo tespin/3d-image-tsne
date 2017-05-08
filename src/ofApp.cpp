@@ -35,14 +35,14 @@ void ofApp::setup()
     string imageSavePath = "test-3d-tsne-scanner-darkly.png";
     
     // development
-    //    nx = 15;
-    //    ny = 10;
-    //    nz = 10;
+      nx = 15;
+      ny = 10;
+      nz = 10;
     
     // test
-    nx = 8;
-    ny = 8;
-    nz = 8;
+    // nx = 8;
+    // ny = 8;
+    // nz = 8;
     
     // still not sure about these numbers?
     initPos = ofPoint(1850, 1850, 2100);
@@ -183,7 +183,7 @@ void ofApp::setup()
         // std::cout << "Instance " << ofToString(i) << "assigned to actual cluster " << ofToString(instanceVector[i].getClusterIndex()) << std::endl;
         
         // check vertices
-        std::cout << "Cluster:" << instanceVector[i].getClusterIndex() << ", Instance: " << ofToString(i) << ", Vertex: " << ofToString(instanceVector[i].getVertex()) << std::endl;
+        // std::cout << "Cluster:" << instanceVector[i].getClusterIndex() << ", Instance: " << ofToString(i) << ", Vertex: " << ofToString(instanceVector[i].getVertex()) << std::endl;
     }
     
     // check mesh
@@ -303,21 +303,10 @@ void ofApp::draw()
 
 void ofApp::initGui()
 {
-    // for every cluster, create a gui and push it back to vector of guis
+    // for every cluster, create a clustergui and push it back to vector of clusterguis
     for (int i = 0; i < NUMCLUSTERS; i++)
     {
         ClusterGui clusterGui;
-        
-        ofxPanel _gui;
-        ofParameter<bool> _drawImages;
-        ofParameter<bool> _drawPointCloud;
-        ofParameter<bool> _save;
-        
-        clusterGui.gui = _gui;
-        clusterGui.drawImages = _drawImages;
-        clusterGui.drawPointCloud = _drawPointCloud;
-        clusterGui.save = _save;
-        
         clustersGui.push_back(clusterGui);
     }
 }
@@ -329,12 +318,12 @@ void ofApp::setupGui()
     {
         clustersGui[i].gui.setup();
         clustersGui[i].gui.setName("Cluster: " + ofToString(i+1));
-        clustersGui[i].gui.setPosition(0, clustersGui[i].gui.getHeight() * (i*7));
+        
+        clustersGui[i].gui.setPosition(ofGetWidth() - clustersGui[i].gui.getWidth(), clustersGui[i].gui.getHeight() * (i*6));
         clustersGui[i].gui.add(clustersGui[i].drawImages.set("Draw Image Cluster: " + ofToString(i+1), true));
         clustersGui[i].gui.add(clustersGui[i].drawPointCloud.set("Draw Point Cloud Cluster: " + ofToString(i+1), true));
         clustersGui[i].gui.add(clustersGui[i].drawMesh.set("Draw Mesh", false));
         clustersGui[i].gui.add(clustersGui[i].showCubes.set("Show Cubes", false));
-        clustersGui[i].gui.add(clustersGui[i].modelRendered.set("Model Rendered", false));
         clustersGui[i].gui.add(clustersGui[i].save.set("Save", false));
     }
 }

@@ -9,11 +9,11 @@
 #include "ofxMarchingCubes.h"
 #include "Instance.h"
 
-//#define NUMIMAGES 1500
-//#define NUMCLUSTERS 11
+#define NUMIMAGES 1500
+#define NUMCLUSTERS 11
 
-#define NUMIMAGES 512
-#define NUMCLUSTERS 4
+//#define NUMIMAGES 512
+//#define NUMCLUSTERS 7
 
 struct ClusterGui
 {
@@ -22,8 +22,9 @@ struct ClusterGui
     ofParameter<bool> drawPointCloud;
     ofParameter<bool> drawMesh;
     ofParameter<bool> showCubes;
-    ofParameter<bool> modelRendered;
     ofParameter<bool> save;
+    
+    bool modelRendered;
 };
 
 class ofApp : public ofBaseApp{
