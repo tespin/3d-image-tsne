@@ -35,20 +35,20 @@ void ofApp::setup()
     string imageSavePath = "test-3d-tsne-scanner-darkly.png";
     
     // development
-      nx = 15;
-      ny = 10;
-      nz = 10;
+    //  nx = 15;
+    //  ny = 10;
+    //  nz = 10;
     
     // test
-    // nx = 8;
-    // ny = 8;
-    // nz = 8;
+     nx = 8;
+     ny = 8;
+     nz = 8;
     
     // still not sure about these numbers?
     initPos = ofPoint(1850, 1850, 2100);
     gridSize = ofPoint(10000, 10000, 10000);
     
-    marchingCubes.init(initPos, gridSize, 15, 15, 15);
+    marchingCubes.init(initPos, gridSize, 16, 16, 16);
     
     w = 256;
     h = 256;
@@ -179,12 +179,20 @@ void ofApp::setup()
             }
         }
         
+//        meshVector[instanceVector[i].getClusterIndex()].addVertex(instanceVector[i].getVertex());
+        
+
         // check cluster
         // std::cout << "Instance " << ofToString(i) << "assigned to actual cluster " << ofToString(instanceVector[i].getClusterIndex()) << std::endl;
         
         // check vertices
         // std::cout << "Cluster:" << instanceVector[i].getClusterIndex() << ", Instance: " << ofToString(i) << ", Vertex: " << ofToString(instanceVector[i].getVertex()) << std::endl;
     }
+    
+    //now it would be nice to write that data out to a file of some sort if possible
+    //for one reason: it takes a long time to test the code - this is worth 1-2 hours of work, because it will save 10 of testing
+    
+    //option 1: generate a 3d array of Instance Objects, so we have a 3d array of cluster IDs to convert into a voxel array
     
     // check mesh
     // for (int i = 0; i < meshVector.size(); i++)
@@ -223,12 +231,12 @@ void ofApp::update()
                     }
                     // std::cout << "Metaballs added!" << std::endl;
                     
-                    std::cout << "Before update: " << ofToString(marchingCubes.getVertices()) << std::endl;
+                    // std::cout << "Before update: " << ofToString(marchingCubes.getVertices()) << std::endl;
                     
                     // update adds the meshes's verts and apply marching cubes
                     marchingCubes.update(0.0035, true);
                     
-                    std::cout << "After update: " << ofToString(marchingCubes.getVertices()) << std::endl;
+                    // std::cout << "After update: " << ofToString(marchingCubes.getVertices()) << std::endl;
                     clustersGui[j].modelRendered = true;
                     
                     
@@ -240,8 +248,8 @@ void ofApp::update()
                     meshVector[j].save(ofToDataPath("meshSave.ply"));
                     clustersGui[j].save = false;
                     marchingCubes.saveModel(ofToDataPath("cluster_" + ofToString(j+1) + ".stl"));
-                    std::cout << "Saving cluster " << ofToString(j+1) << "!" << std::endl;
-                }   
+                    // std::cout << "Saving cluster " << ofToString(j+1) << "!" << std::endl;
+                }
             }
         }
     }
@@ -251,7 +259,7 @@ void ofApp::update()
 
 void ofApp::draw()
 {
-    ofBackground(255);
+    ofBackground(0);
     cam.begin();
     ofEnableDepthTest();
     
@@ -319,7 +327,13 @@ void ofApp::setupGui()
         clustersGui[i].gui.setup();
         clustersGui[i].gui.setName("Cluster: " + ofToString(i+1));
         
-        clustersGui[i].gui.setPosition(ofGetWidth() - clustersGui[i].gui.getWidth(), clustersGui[i].gui.getHeight() * (i*6));
+        // if (NUMCLUSTERS > 5)
+        // {
+            // for (int j = 0; j < 6; j++) clustersGui[j].gui.setPosition(clustersGui[j].gui.getWidth(), clustersGui[j].gui.getHeight() * (j*6));
+            // for (int k = 6; k < NUMCLUSTERS; k++) clustersGui[k].gui.setPosition(ofGetWidth() - clustersGui[k].gui.getWidth(), clustersGui[k].gui.getHeight() * (k*6));
+        // }
+        
+        clustersGui[i].gui.setPosition(0, clustersGui[i].gui.getHeight() * (i*6));
         clustersGui[i].gui.add(clustersGui[i].drawImages.set("Draw Image Cluster: " + ofToString(i+1), true));
         clustersGui[i].gui.add(clustersGui[i].drawPointCloud.set("Draw Point Cloud Cluster: " + ofToString(i+1), true));
         clustersGui[i].gui.add(clustersGui[i].drawMesh.set("Draw Mesh", false));
@@ -331,10 +345,7 @@ void ofApp::setupGui()
 void ofApp::drawGui()
 {
     // draw each gui
-    for (int i = 0; i < NUMCLUSTERS; i++)
-    {
-        clustersGui[i].gui.draw();
-    }
+    for (int i = 0; i < NUMCLUSTERS; i++) clustersGui[i].gui.draw();
 }
 
 void ofApp::keyReleased(int key)
@@ -348,10 +359,7 @@ void ofApp::keyReleased(int key)
             {
                 if(clustersGui[j].modelRendered)
                 {
-                    if (key == 's')
-                    {
-                        clustersGui[j].save = true;
-                    }
+                    if (key == 's') clustersGui[j].save = true;
                 }
             }
         }

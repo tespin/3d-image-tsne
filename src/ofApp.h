@@ -9,11 +9,11 @@
 #include "ofxMarchingCubes.h"
 #include "Instance.h"
 
-#define NUMIMAGES 1500
-#define NUMCLUSTERS 11
+//#define NUMIMAGES 1500
+//#define NUMCLUSTERS 11
 
-//#define NUMIMAGES 512
-//#define NUMCLUSTERS 7
+#define NUMIMAGES 512
+#define NUMCLUSTERS 5
 
 struct ClusterGui
 {
