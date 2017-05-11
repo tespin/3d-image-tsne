@@ -134,6 +134,10 @@ void ofApp::setup()
     clusterer.train();
     clusters = clusterer.getClusters();
     
+    // t-SNE is dimension-reducing algorithm; raw t-SNE plot groups things 'randomly', but doesn't tell what group it's a part of
+    // visually distinct, but eventually want to delineate boundaries and assign clusters to groups
+    // k-means helps to identify groups that look similar (houses xy embedding + cluster index)
+    
     // assign each instance to a cluster
     for (int i = 0; i < clusters.size(); i++)
     {
@@ -171,15 +175,15 @@ void ofApp::setup()
     {
         instanceVector[i].setVertex(posVector[i]);
         
-        for (int j = 0; j < NUMCLUSTERS; j++)
-        {
-            if (instanceVector[i].getClusterIndex() == j)
-            {
-                meshVector[j].addVertex(instanceVector[i].getVertex());
-            }
-        }
+//        for (int j = 0; j < NUMCLUSTERS; j++)
+//        {
+//            if (instanceVector[i].getClusterIndex() == j)
+//            {
+//                meshVector[j].addVertex(instanceVector[i].getVertex());
+//            }
+//        }
         
-//        meshVector[instanceVector[i].getClusterIndex()].addVertex(instanceVector[i].getVertex());
+        meshVector[instanceVector[i].getClusterIndex()].addVertex(instanceVector[i].getVertex());
         
 
         // check cluster
@@ -209,49 +213,74 @@ void ofApp::update()
     // cycle through each gui
     for (int i = 0; i < instanceVector.size(); i++)
     {
-        for (int j = 0; j < NUMCLUSTERS; j++)
+        
+//        meshVector[instanceVector[i].getClusterIndex()].addVertex(instanceVector[i].getVertex());
+        if (clustersGui[instanceVector[i].getClusterIndex()].showCubes && !clustersGui[instanceVector[i].getClusterIndex()].modelRendered)
         {
-            // for each selected cluster
-            if (instanceVector[i].getClusterIndex() == j)
+            marchingCubes.resetIsoValues();
+            auto vertices = meshVector[instanceVector[i].getClusterIndex()].getVertices();
+            
+            for (int k = 0; k < meshVector[instanceVector[i].getClusterIndex()].getNumVertices(); k++)
             {
-                // if selected cluster is show cubes and model hasn't been rendered
-                if (clustersGui[j].showCubes && !clustersGui[j].modelRendered)
-                {
-                    marchingCubes.resetIsoValues();
-                    auto vertices = meshVector[j].getVertices();
-                    
-                    // add meta ball at vertices of selected mesh
-                    for (int k = 0; k < meshVector[j].getNumVertices(); k++)
-                    {
-                        ofVec3f vertex = vertices.at(k);
-                        ofPoint p = ofPoint(vertex.x, vertex.y, vertex.z);
-                        marchingCubes.addMetaBall(p, 0.05);
-                        // std::cout << "Vertex: " << ofToString(vertex) << " added!" << std::endl;
-                        
-                    }
-                    // std::cout << "Metaballs added!" << std::endl;
-                    
-                    // std::cout << "Before update: " << ofToString(marchingCubes.getVertices()) << std::endl;
-                    
-                    // update adds the meshes's verts and apply marching cubes
-                    marchingCubes.update(0.0035, true);
-                    
-                    // std::cout << "After update: " << ofToString(marchingCubes.getVertices()) << std::endl;
-                    clustersGui[j].modelRendered = true;
-                    
-                    
-                }
-                
-                // if selected model is rendered and save is true
-                if (clustersGui[j].modelRendered && clustersGui[j].save)
-                {
-                    meshVector[j].save(ofToDataPath("meshSave.ply"));
-                    clustersGui[j].save = false;
-                    marchingCubes.saveModel(ofToDataPath("cluster_" + ofToString(j+1) + ".stl"));
-                    // std::cout << "Saving cluster " << ofToString(j+1) << "!" << std::endl;
-                }
+                ofVec3f vertex = vertices.at(k);
+                ofPoint p = ofPoint(vertex.x, vertex.y, vertex.z);
+                marchingCubes.addMetaBall(p, 0.5);
             }
+            
+            marchingCubes.update(0.0035, true);
+            clustersGui[instanceVector[i].getClusterIndex()].modelRendered = true;
         }
+        
+        if (clustersGui[instanceVector[i].getClusterIndex()].modelRendered && clustersGui[instanceVector[i].getClusterIndex()].save)
+        {
+            clustersGui[instanceVector[i].getClusterIndex()].save = false;
+            marchingCubes.saveModel(ofToDataPath("cluster_" + ofToString(instanceVector[i].getClusterIndex()+1) + + ".stl"));
+            
+        }
+
+//        for (int j = 0; j < NUMCLUSTERS; j++)
+//        {
+//            // for each selected cluster
+//            if (instanceVector[i].getClusterIndex() == j)
+//            {
+//                // if selected cluster is show cubes and model hasn't been rendered
+//                if (clustersGui[j].showCubes && !clustersGui[j].modelRendered)
+//                {
+//                    marchingCubes.resetIsoValues();
+//                    auto vertices = meshVector[j].getVertices();
+//                    
+//                    // add meta ball at vertices of selected mesh
+//                    for (int k = 0; k < meshVector[j].getNumVertices(); k++)
+//                    {
+//                        ofVec3f vertex = vertices.at(k);
+//                        ofPoint p = ofPoint(vertex.x, vertex.y, vertex.z);
+//                        marchingCubes.addMetaBall(p, 0.05);
+//                        // std::cout << "Vertex: " << ofToString(vertex) << " added!" << std::endl;
+//                        
+//                    }
+//                    // std::cout << "Metaballs added!" << std::endl;
+//                    
+//                    // std::cout << "Before update: " << ofToString(marchingCubes.getVertices()) << std::endl;
+//                    
+//                    // update adds the meshes's verts and apply marching cubes
+//                    marchingCubes.update(0.0035, true);
+//                    
+//                    // std::cout << "After update: " << ofToString(marchingCubes.getVertices()) << std::endl;
+//                    clustersGui[j].modelRendered = true;
+//                    
+//                    
+//                }
+//                
+//                // if selected model is rendered and save is true
+//                if (clustersGui[j].modelRendered && clustersGui[j].save)
+//                {
+//                    meshVector[j].save(ofToDataPath("meshSave.ply"));
+//                    clustersGui[j].save = false;
+//                    marchingCubes.saveModel(ofToDataPath("cluster_" + ofToString(j+1) + ".stl"));
+//                    // std::cout << "Saving cluster " << ofToString(j+1) << "!" << std::endl;
+//                }
+//            }
+//        }
     }
     // std::cout << "Marching cubes verts: " << ofToString(marchingCubes.getVertices()) << std::endl;
     // std::cout << cam.getPosition() << std::endl;
@@ -265,19 +294,19 @@ void ofApp::draw()
     
     for (int i = 0; i < solvedGrid.size(); i++)
     {
-        for (int j = 0; j < NUMCLUSTERS; j++)
-        {
-            if (instanceVector[i].getClusterIndex() == j)
-            {
+//        for (int j = 0; j < NUMCLUSTERS; j++)
+//        {
+//            if (instanceVector[i].getClusterIndex() == j)
+//            {
                 // if selected cluster's draw images parameter is true
-                if (clustersGui[j].drawImages)
+                if (clustersGui[instanceVector[i].getClusterIndex()].drawImages)
                 {
                     ofSetColor(255, 255, 255);
                     images[i].draw(posVector[i], images[i].getWidth(), images[i].getHeight());
                 }
                 
                 // if selected cluster's draw point cloud parameter is true
-                if (clustersGui[j].drawPointCloud)
+                if (clustersGui[instanceVector[i].getClusterIndex()].drawPointCloud)
                 {
                     ofSetColor(colors[clusters[i]]);
                     sphere.setPosition(posVector[i].x + (images[i].getWidth() / 2) , posVector[i].y + (images[i].getHeight() / 2), posVector[i].z);
@@ -285,24 +314,24 @@ void ofApp::draw()
                 }
                 
                 // if selected cluster's draw mesh parameter is true
-                if (clustersGui[j].drawMesh)
+                if (clustersGui[instanceVector[i].getClusterIndex()].drawMesh)
                 {
                     ofSetColor(colors[clusters[i]]);
-                    meshVector[j].draw();
+                    meshVector[instanceVector[i].getClusterIndex()].draw();
                 }
                 
                 // if selected cluster's show cubes parameter is true
-                if (clustersGui[j].showCubes)
+                if (clustersGui[instanceVector[i].getClusterIndex()].showCubes)
                 {
                     ofSetColor(colors[clusters[i]]);
                     marchingCubes.drawFilled();
                 }
                 else
                 {
-                    clustersGui[j].modelRendered = false;
+                    clustersGui[instanceVector[i].getClusterIndex()].modelRendered = false;
                 }
-            }
-        }
+//            }
+//        }
     }
     ofDisableDepthTest();
     cam.end();
@@ -353,15 +382,17 @@ void ofApp::keyReleased(int key)
     // for selected gui, if 's' key is pressed, save parameter is true
     for (int i = 0; i < instanceVector.size(); i++)
     {
-        for (int j = 0; j < NUMCLUSTERS; j++)
-        {
-            if (instanceVector[i].getClusterIndex() == j)
-            {
-                if(clustersGui[j].modelRendered)
-                {
-                    if (key == 's') clustersGui[j].save = true;
-                }
-            }
-        }
+        if (clustersGui[instanceVector[i].getClusterIndex()].modelRendered && key == 's')
+            clustersGui[instanceVector[i].getClusterIndex()].save = true;
+//        for (int j = 0; j < NUMCLUSTERS; j++)
+//        {
+//            if (instanceVector[i].getClusterIndex() == j)
+//            {
+//                if(clustersGui[j].modelRendered)
+//                {
+//                    if (key == 's') clustersGui[j].save = true;
+//                }
+//            }
+//        }
     }
 }
