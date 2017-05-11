@@ -1,2 +1,2 @@
-# 3d-image-tsne
-3D t-SNE using images.
+# movie-stills
+Clustering image sequences with t-SNE and k-means, then exporting as .stl for 3D printing.
