@@ -26,8 +26,8 @@ class CCVEncoder
             _network(network),
             _isRunning(true),
             _layersToEncode(layersToEncode)
-    {
-    }
+        {
+        }
     
         ~CCVEncoder()
         {
@@ -68,92 +68,91 @@ class CCVEncoder
         }
     
     private:
-    
-    void run()
-    {
-        _isRunning = true;
-        
-        while (_isRunning)
+        void run()
         {
-            std::filesystem::path path;
+            _isRunning = true;
             
-            if (_channel.receive(path))
+            while (_isRunning)
             {
-                for (auto& layer: _layersToEncode)
+                std::filesystem::path path;
+                
+                if (_channel.receive(path))
                 {
-                    std::stringstream newExtension;
-                    newExtension << "." << _network << "." << layer << ".dat";
-                    
-                    std::filesystem::path file = std::filesystem::path(path);
-                    std::filesystem::path encodedFile = file;
-                    encodedFile += newExtension.str();
-                    
-                    if (!_forceEncode && std::filesystem::exists(encodedFile))
+                    for (auto& layer: _layersToEncode)
                     {
-                        continue;
-                    }
-                    
-                    ofPixels pixels;
-                    
-                    if (!ofLoadImage(pixels, path))
-                    {
-                        ofLogError("CCVEncoder::run") << "Unable to load >>" << path << "<<";
-                        continue;
-                    }
-                    
-                    if (!_ccv.isLoaded())
-                    {
-                        if (!_attemptedSetup)
+                        std::stringstream newExtension;
+                        newExtension << "." << _network << "." << layer << ".dat";
+                        
+                        std::filesystem::path file = std::filesystem::path(path);
+                        std::filesystem::path encodedFile = file;
+                        encodedFile += newExtension.str();
+                        
+                        if (!_forceEncode && std::filesystem::exists(encodedFile))
                         {
-                            _ccv.setup(_network);
-                            _attemptedSetup = true;
+                            continue;
                         }
-                        else
+                        
+                        ofPixels pixels;
+                        
+                        if (!ofLoadImage(pixels, path))
                         {
-                            ofLogError("CCVEncoder::run") << "CCV could not be loaded with network: " << _network;
-                            break;
+                            ofLogError("CCVEncoder::run") << "Unable to load >>" << path << "<<";
+                            continue;
                         }
+                        
+                        if (!_ccv.isLoaded())
+                        {
+                            if (!_attemptedSetup)
+                            {
+                                _ccv.setup(_network);
+                                _attemptedSetup = true;
+                            }
+                            else
+                            {
+                                ofLogError("CCVEncoder::run") << "CCV could not be loaded with network: " << _network;
+                                break;
+                            }
+                        }
+                        
+                        std::vector<float> encoding = _ccv.encode(pixels, layer);
+                        
+                        std::ofstream ostr(encodedFile.generic_string(), std::ios::binary);
+                        Poco::DeflatingOutputStream deflater(ostr, Poco::DeflatingStreamBuf::STREAM_GZIP);
+                        Poco::BinaryWriter writer(deflater);
+                        writer.writeBOM();
+                        writer << encoding.size();
+                        for (const auto& f: encoding) writer << f;
+                        writer.flush();
                     }
-                    
-                    std::vector<float> encoding = _ccv.encode(pixels, layer);
-                    
-                    std::ofstream ostr(encodedFile.generic_string(), std::ios::binary);
-                    Poco::DeflatingOutputStream deflater(ostr, Poco::DeflatingStreamBuf::STREAM_GZIP);
-                    Poco::BinaryWriter writer(deflater);
-                    writer.writeBOM();
-                    writer << encoding.size();
-                    for (const auto& f: encoding) writer << f;
-                    writer.flush();
                 }
             }
+            
+            _channel.close();
         }
         
-        _channel.close();
-    }
-    
-    // network path
-    std::string _network;
-    
-    // internal thread
-    std::thread _thread;
-    
-    // true if attempted to load network
-    bool _attemptedSetup = false;
-    
-    // true if thread is running
-    std::atomic<bool> _isRunning;
-    
-    // queue of files to encode
-    ofxIO::ThreadChannel<std::filesystem::path> _channel;
-    
-    // true if encoder should force a re-encode
-    bool _forceEncode = false;
-    
-    // libccv instance
-    ofxCcv _ccv;
-    
-    // layers to extract vectors for
-    std::vector<std::size_t> _layersToEncode;
+        // network path
+        std::string _network;
+        
+        // internal thread
+        std::thread _thread;
+        
+        // true if attempted to load network
+        bool _attemptedSetup = false;
+        
+        // true if thread is running
+        std::atomic<bool> _isRunning;
+        
+        // queue of files to encode
+        ofxIO::ThreadChannel<std::filesystem::path> _channel;
+        
+        // true if encoder should force a re-encode
+        bool _forceEncode = false;
+        
+        // libccv instance
+        ofxCcv _ccv;
+        
+        // layers to extract vectors for
+        std::vector<std::size_t> _layersToEncode;
     
 };
 
