@@ -171,18 +171,26 @@ struct ClusterGui
 class ofApp : public ofBaseApp{
 
 	public:
-		void setup();
-		void update();
-		void draw();
+		void setup() override;
+		void update() override;
+		void draw() override;
     
         void initGui();
         void setupGui();
         void drawGui();
+    
+        void process(const std::filesystem::path& path);
+        void encode(const std::filesystem::path& path);
         
         void keyReleased(int key);
-        
+        void dragEvent(ofDragInfo dragInfo) override;
+    
         void scan_dir_imgs(ofDirectory dir);
-        
+    
+        std::vector<std::unique_ptr<CCVEncoder>> encoders;
+        std::size_t currentWorkerIndex = 0;
+        std::unique_ptr<ofxIO::RegexPathFilter> fileFilter;
+    
         std::vector<ClusterGui> clustersGui;
         
         ofxCcv ccv;

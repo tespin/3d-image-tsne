@@ -34,7 +34,7 @@ void ofApp::setup()
 {
     ofSetVerticalSync(true);
     
-    string imageDir = "";
+    string imageDir = "/Users/tespin/Documents/openFrameworks/apps/myApps/00_BatchFeatureEncoder/bin/data/image-set-a-scanner-darkly-2";
     
     if (imageDir == "")
     {
@@ -133,7 +133,7 @@ void ofApp::setup()
     clusterer.train();
     clusters = clusterer.getClusters();
     
-    // assign each instance to a cluster
+    // assign each element to a cluster
     for (int i = 0; i < clusters.size(); i++)
     {
         Element element;
@@ -313,6 +313,45 @@ void ofApp::drawGui()
 {
     // draw each gui
     for (int i = 0; i < NUMCLUSTERS; i++) clustersGui[i].gui.draw();
+}
+
+void ofApp::process(const std::filesystem::path& _path)
+{
+    std::filesystem::path path = ofToDataPath(_path, true);
+    
+    if (std::filesystem::is_directory(path))
+    {
+        std::vector<std::filesystem::path> files;
+        
+        ofxIO::DirectoryUtils::list(path, files, true, fileFilter.get());
+        
+        // submit encode
+        for (auto& f: files) encode(f);
+    }
+    else if (std::filesystem::is_regular_file(path))
+    {
+        if (fileFilter->accept(Poco::Path(path.string()))) encode(path);
+    }
+}
+
+void ofApp::encode(const std::filesystem::path& path)
+{
+    currentWorkerIndex = (currentWorkerIndex + 1) % encoders.size();
+    
+    if (!encoders[currentWorkerIndex]->encode(path))
+    {
+        ofLogError("ofApp::encode") << "Unable to submit image to encoder " << currentWorkerIndex << " : " << path;
+    }
+}
+
+void ofApp::dragEvent(ofDragInfo dragInfo)
+{
+    ofLogNotice("ofApp::dragEvent") << "Got dropped files.";
+    
+    for (auto& file: dragInfo.files)
+    {
+        process(file);
+    }
 }
 
 void ofApp::keyReleased(int key)
