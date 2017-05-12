@@ -1,5 +1,5 @@
 //
-//  Instance.hpp
+//  Element.hpp
 //  movie_stills_final
 //
 //  Created by Tristan Espinoza on 5/4/17.
@@ -10,7 +10,7 @@
 
 #include "ofMain.h"
 
-class Instance
+class Element
 {
     public:
     

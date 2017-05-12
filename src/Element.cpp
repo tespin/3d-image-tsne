@@ -1,29 +1,29 @@
 //
-//  Instance.cpp
+//  Element.cpp
 //  movie_stills_final
 //
 //  Created by Tristan Espinoza on 5/4/17.
 //
 //
 
-#include "Instance.h"
+#include "Element.h"
 
-void Instance::assignClusterIndex(int _clusterIndex)
+void Element::assignClusterIndex(int _clusterIndex)
 {
     clusterIndex = _clusterIndex;
 }
 
-int Instance::getClusterIndex()
+int Element::getClusterIndex()
 {
     return clusterIndex;
 }
 
-void Instance::setVertex(ofVec3f _vertex)
+void Element::setVertex(ofVec3f _vertex)
 {
     vertex = _vertex;
 }
 
-ofVec3f Instance::getVertex()
+ofVec3f Element::getVertex()
 {
     return vertex;
 }

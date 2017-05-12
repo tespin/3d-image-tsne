@@ -28,7 +28,9 @@ void ofApp::scan_dir_imgs(ofDirectory dir)
 
 void ofApp::setup()
 {
-    string imageDir = "";
+    ofSetVerticalSync(true);
+    
+    string imageDir = "/Users/tespin/Documents/openFrameworks/apps/myApps/00_BatchFeatureEncoder/bin/data/image-set-a-scanner-darkly-2";
     
     if (imageDir == "")
     {
@@ -36,7 +38,6 @@ void ofApp::setup()
         ofExit();
         return;
     }
-    ofSetVerticalSync(true);
     
     // development
     //  nx = 15;
@@ -146,10 +147,10 @@ void ofApp::setup()
     // assign each instance to a cluster
     for (int i = 0; i < clusters.size(); i++)
     {
-        Instance instance;
-        instance.assignClusterIndex(clusters[i]);
+        Element element;
+        element.assignClusterIndex(clusters[i]);
         
-        instanceVector.push_back(instance);
+        elementVector.push_back(element);
         
     //    cout << "Instance " << ofToString(i) << " " << ofToString(instances[i]) << " assigned to cluster " << ofToString(clusters[i]) << endl;
     }
@@ -176,26 +177,26 @@ void ofApp::setup()
     }
     
     // populate meshes with verts
-    for (int i = 0; i < instanceVector.size(); i++)
+    for (int i = 0; i < elementVector.size(); i++)
     {
-        instanceVector[i].setVertex(posVector[i]);
+        elementVector[i].setVertex(posVector[i]);
         
 //        for (int j = 0; j < NUMCLUSTERS; j++)
 //        {
-//            if (instanceVector[i].getClusterIndex() == j)
+//            if (elementVector[i].getClusterIndex() == j)
 //            {
-//                meshVector[j].addVertex(instanceVector[i].getVertex());
+//                meshVector[j].addVertex(elementVector[i].getVertex());
 //            }
 //        }
         
-        meshVector[instanceVector[i].getClusterIndex()].addVertex(instanceVector[i].getVertex());
+        meshVector[elementVector[i].getClusterIndex()].addVertex(elementVector[i].getVertex());
         
 
         // check cluster
-        // std::cout << "Instance " << ofToString(i) << "assigned to actual cluster " << ofToString(instanceVector[i].getClusterIndex()) << std::endl;
+        // std::cout << "Instance " << ofToString(i) << "assigned to actual cluster " << ofToString(elementVector[i].getClusterIndex()) << std::endl;
         
         // check vertices
-        // std::cout << "Cluster:" << instanceVector[i].getClusterIndex() << ", Instance: " << ofToString(i) << ", Vertex: " << ofToString(instanceVector[i].getVertex()) << std::endl;
+        // std::cout << "Cluster:" << elementVector[i].getClusterIndex() << ", Instance: " << ofToString(i) << ", Vertex: " << ofToString(elementVector[i].getVertex()) << std::endl;
     }
     
     //now it would be nice to write that data out to a file of some sort if possible
@@ -216,12 +217,12 @@ void ofApp::setup()
 void ofApp::update()
 {
     // cycle through each gui
-    for (int i = 0; i < instanceVector.size(); i++)
+    for (int i = 0; i < elementVector.size(); i++)
     {
         for (int j = 0; j < NUMCLUSTERS; j++)
         {
             // for each selected cluster
-            if (instanceVector[i].getClusterIndex() == j)
+            if (elementVector[i].getClusterIndex() == j)
             {
                 // if selected cluster is show cubes and model hasn't been rendered
                 if (clustersGui[j].showCubes && !clustersGui[j].modelRendered)
@@ -247,15 +248,13 @@ void ofApp::update()
                     
                     // std::cout << "After update: " << ofToString(marchingCubes.getVertices()) << std::endl;
                     clustersGui[j].modelRendered = true;
-                    
-                    
                 }
                 
                 // if selected model is rendered and save is true
                 if (clustersGui[j].modelRendered && clustersGui[j].save)
                 {
-                    meshVector[j].save(ofToDataPath("meshSave.ply"));
                     clustersGui[j].save = false;
+                    // clustersGui[j].modelRendered = false;
                     marchingCubes.saveModel(ofToDataPath("cluster_" + ofToString(j+1) + ".stl"));
                     // std::cout << "Saving cluster " << ofToString(j+1) << "!" << std::endl;
                 }
@@ -276,7 +275,7 @@ void ofApp::draw()
     {
         for (int j = 0; j < NUMCLUSTERS; j++)
         {
-            if (instanceVector[i].getClusterIndex() == j)
+            if (elementVector[i].getClusterIndex() == j)
             {
                 // if selected cluster's draw images parameter is true
                 if (clustersGui[j].drawImages)
@@ -305,10 +304,6 @@ void ofApp::draw()
                 {
                     ofSetColor(colors[clusters[i]]);
                     marchingCubes.drawFilled();
-                }
-                else
-                {
-                    clustersGui[j].modelRendered = false;
                 }
             }
         }
@@ -360,11 +355,11 @@ void ofApp::drawGui()
 void ofApp::keyReleased(int key)
 {
     // for selected gui, if 's' key is pressed, save parameter is true
-    for (int i = 0; i < instanceVector.size(); i++)
+    for (int i = 0; i < elementVector.size(); i++)
     {
         for (int j = 0; j < NUMCLUSTERS; j++)
         {
-            if (instanceVector[i].getClusterIndex() == j)
+            if (elementVector[i].getClusterIndex() == j)
             {
                 if(clustersGui[j].modelRendered)
                 {
