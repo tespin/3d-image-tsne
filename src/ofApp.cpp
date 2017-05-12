@@ -34,7 +34,7 @@ void ofApp::setup()
 {
     ofSetVerticalSync(true);
     
-    string imageDir = "/Users/tespin/Documents/openFrameworks/apps/myApps/00_BatchFeatureEncoder/bin/data/image-set-a-scanner-darkly-2";
+    string imageDir = "";
     
     if (imageDir == "")
     {
@@ -300,7 +300,6 @@ void ofApp::setupGui()
     {
         clustersGui[i].gui.setup();
         clustersGui[i].gui.setName("Cluster: " + ofToString(i+1));
-        
         clustersGui[i].gui.setPosition(0, clustersGui[i].gui.getHeight() * (i*6));
         clustersGui[i].gui.add(clustersGui[i].drawImages.set("Draw Image Cluster: " + ofToString(i+1), true));
         clustersGui[i].gui.add(clustersGui[i].drawPointCloud.set("Draw Point Cloud Cluster: " + ofToString(i+1), true));
