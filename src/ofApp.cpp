@@ -66,7 +66,7 @@ void ofApp::setup()
     ofLog() << "Gathering images...";
     ofDirectory dir = ofDirectory(imageDir);
     scan_dir_imgs(dir);
-    std::cout << imageFiles.size() << endl;
+    ofLog() << imageFiles.size() << " images";
     
     // check that there are enough images in directory
     if (imageFiles.size() < NUMIMAGES)
@@ -133,7 +133,7 @@ void ofApp::setup()
     clusterer.train();
     clusters = clusterer.getClusters();
     
-    // assign each element to a cluster
+    // assign each instance to a cluster
     for (int i = 0; i < clusters.size(); i++)
     {
         Element element;
@@ -300,6 +300,7 @@ void ofApp::setupGui()
     {
         clustersGui[i].gui.setup();
         clustersGui[i].gui.setName("Cluster: " + ofToString(i+1));
+        
         clustersGui[i].gui.setPosition(0, clustersGui[i].gui.getHeight() * (i*6));
         clustersGui[i].gui.add(clustersGui[i].drawImages.set("Draw Image Cluster: " + ofToString(i+1), true));
         clustersGui[i].gui.add(clustersGui[i].drawPointCloud.set("Draw Point Cloud Cluster: " + ofToString(i+1), true));
@@ -313,45 +314,6 @@ void ofApp::drawGui()
 {
     // draw each gui
     for (int i = 0; i < NUMCLUSTERS; i++) clustersGui[i].gui.draw();
-}
-
-void ofApp::process(const std::filesystem::path& _path)
-{
-    std::filesystem::path path = ofToDataPath(_path, true);
-    
-    if (std::filesystem::is_directory(path))
-    {
-        std::vector<std::filesystem::path> files;
-        
-        ofxIO::DirectoryUtils::list(path, files, true, fileFilter.get());
-        
-        // submit encode
-        for (auto& f: files) encode(f);
-    }
-    else if (std::filesystem::is_regular_file(path))
-    {
-        if (fileFilter->accept(Poco::Path(path.string()))) encode(path);
-    }
-}
-
-void ofApp::encode(const std::filesystem::path& path)
-{
-    currentWorkerIndex = (currentWorkerIndex + 1) % encoders.size();
-    
-    if (!encoders[currentWorkerIndex]->encode(path))
-    {
-        ofLogError("ofApp::encode") << "Unable to submit image to encoder " << currentWorkerIndex << " : " << path;
-    }
-}
-
-void ofApp::dragEvent(ofDragInfo dragInfo)
-{
-    ofLogNotice("ofApp::dragEvent") << "Got dropped files.";
-    
-    for (auto& file: dragInfo.files)
-    {
-        process(file);
-    }
 }
 
 void ofApp::keyReleased(int key)
